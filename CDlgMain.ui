@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>CDlgMain</class>
+ <widget class="QMainWindow" name="CDlgMain">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>CDlgMain</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QPushButton" name="btnOpenFile">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>8</y>
+      <width>80</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>파일 열기</string>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="teLog1">
+    <property name="geometry">
+     <rect>
+      <x>260</x>
+      <y>0</y>
+      <width>540</width>
+      <height>582</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnNextTR">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>38</y>
+      <width>80</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>다음 TR 표시</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="leRcvTM">
+    <property name="geometry">
+     <rect>
+      <x>150</x>
+      <y>32</y>
+      <width>101</width>
+      <height>20</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>154</x>
+      <y>12</y>
+      <width>69</width>
+      <height>12</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>시세 수신 시각</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>17</height>
+    </rect>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+ <slots>
+  <slot>slotBtnOpenFile()</slot>
+ </slots>
+</ui>
