@@ -20,3 +20,13 @@ CDlgMain::~CDlgMain()
 {
     delete ui;
 }
+
+void CDlgMain::slotBtnOpenFile(void)
+{
+
+}
+
+void CDlgMain::slotBtnNextTR(void)
+{
+
+}

@@ -19,8 +19,8 @@
      <rect>
       <x>20</x>
       <y>8</y>
-      <width>80</width>
-      <height>18</height>
+      <width>84</width>
+      <height>20</height>
      </rect>
     </property>
     <property name="font">
@@ -47,8 +47,8 @@
      <rect>
       <x>20</x>
       <y>38</y>
-      <width>80</width>
-      <height>18</height>
+      <width>84</width>
+      <height>20</height>
      </rect>
     </property>
     <property name="font">
@@ -75,8 +75,8 @@
      <rect>
       <x>154</x>
       <y>12</y>
-      <width>69</width>
-      <height>12</height>
+      <width>94</width>
+      <height>14</height>
      </rect>
     </property>
     <property name="font">
@@ -101,8 +101,42 @@
   </widget>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>btnOpenFile</sender>
+   <signal>clicked()</signal>
+   <receiver>CDlgMain</receiver>
+   <slot>slotBtnOpenFile()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>91</x>
+     <y>35</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>104</x>
+     <y>33</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>btnNextTR</sender>
+   <signal>clicked()</signal>
+   <receiver>CDlgMain</receiver>
+   <slot>slotBtnNextTR()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>87</x>
+     <y>65</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>106</x>
+     <y>65</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
  <slots>
   <slot>slotBtnOpenFile()</slot>
+  <slot>slotBtnNextTR()</slot>
  </slots>
 </ui>

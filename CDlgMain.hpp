@@ -19,5 +19,9 @@ public:
 
 private:
     Ui::CDlgMain *ui;
+
+private slots:
+    void slotBtnOpenFile(void);
+    void slotBtnNextTR(void);
 };
 #endif // CDLGMAIN_HPP
