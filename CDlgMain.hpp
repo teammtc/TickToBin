@@ -2,6 +2,7 @@
 #define CDLGMAIN_HPP
 
 #include <QMainWindow>
+#include <QFileDialog>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {

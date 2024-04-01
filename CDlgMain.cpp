@@ -23,7 +23,7 @@ CDlgMain::~CDlgMain()
 
 void CDlgMain::slotBtnOpenFile(void)
 {
-
+    QString sFileName = QFileDialog::getOpenFileName(nullptr, tr("Open File"), "D:/스터디/시세/U20240116", tr("Text files (*.txt)"));
 }
 
 void CDlgMain::slotBtnNextTR(void)
