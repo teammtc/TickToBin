@@ -23,7 +23,29 @@ CDlgMain::~CDlgMain()
 
 void CDlgMain::slotBtnOpenFile(void)
 {
-    QString sFileName = QFileDialog::getOpenFileName(nullptr, tr("Open File"), "D:/스터디/시세/U20240116", tr("Text files (*.txt)"));
+    QString sFileName = QFileDialog::getOpenFileName(nullptr
+                                                     , tr("Open File")
+                                                     , "D:/스터디/시세/U20240116"
+                                                     , tr("Text files (*.txt)"));
+
+    if (sFileName.isEmpty() == true)
+        qDebug() << "Failed to open file";
+
+    QFile file(sFileName);
+    file.open(QIODevice::ReadOnly | QIODevice::Text);
+    QTextStream textStream(&file);
+    QString sReadLine;
+
+    while (textStream.atEnd() == false)
+    {
+        sReadLine = textStream.readLine();
+
+        if (sReadLine.length() >= 17 && sReadLine.at(16) == ':')
+        {
+            ui->teLog1->setText(sReadLine);
+            break;
+        }
+    }
 }
 
 void CDlgMain::slotBtnNextTR(void)
