@@ -40,9 +40,15 @@ void CDlgMain::slotBtnOpenFile(void)
     {
         sReadLine = textStream.readLine();
 
-        if (sReadLine.length() >= 17 && sReadLine.at(16) == ':')
+        if (sReadLine.length() >= mColonPos && sReadLine.at(mColonPos) == ':')
         {
             ui->teLog1->setText(sReadLine);
+
+            qint64 iEpochTime = sReadLine.left(mColonPos).toLongLong();
+            iEpochTime = iEpochTime / 1000;
+            QDateTime dDateTime = dDateTime.fromMSecsSinceEpoch(iEpochTime);
+            ui->leRcvTM->setText(dDateTime.toString("HH:mm:ss.zzz"));
+
             break;
         }
     }
