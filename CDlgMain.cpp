@@ -42,6 +42,7 @@ void CDlgMain::slotBtnOpenFile(void)
     }
 
     mTextStream.setDevice(&mFile);
+    mTextStream.setEncoding(QStringConverter::System);
     readNextLine();
 }
 
