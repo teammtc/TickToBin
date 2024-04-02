@@ -5,7 +5,6 @@
 #include <QFileDialog>
 #include <QFile>
 #include <QTextStream>
-#include <QTimeZone>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -20,11 +19,14 @@ class CDlgMain : public QMainWindow
 public:
     CDlgMain(QWidget *parent = nullptr);
     ~CDlgMain();
+    void readNextLine(void);
 
     constexpr static int8_t mColonPos = 16;
 
 private:
     Ui::CDlgMain *ui;
+    QFile         mFile;
+    QTextStream   mTextStream;
 
 private slots:
     void slotBtnOpenFile(void);

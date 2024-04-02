@@ -29,32 +29,48 @@ void CDlgMain::slotBtnOpenFile(void)
                                                      , tr("Text files (*.txt)"));
 
     if (sFileName.isEmpty() == true)
-        qDebug() << "Failed to open file";
-
-    QFile file(sFileName);
-    file.open(QIODevice::ReadOnly | QIODevice::Text);
-    QTextStream textStream(&file);
-    QString sReadLine;
-
-    while (textStream.atEnd() == false)
     {
-        sReadLine = textStream.readLine();
-
-        if (sReadLine.length() >= mColonPos && sReadLine.at(mColonPos) == ':')
-        {
-            ui->teLog1->setText(sReadLine);
-
-            qint64 iEpochTime = sReadLine.left(mColonPos).toLongLong();
-            iEpochTime = iEpochTime / 1000;
-            QDateTime dDateTime = dDateTime.fromMSecsSinceEpoch(iEpochTime);
-            ui->leRcvTM->setText(dDateTime.toString("HH:mm:ss.zzz"));
-
-            break;
-        }
+        qDebug() << "Failed to get file name";
+        return;
     }
+
+    mFile.setFileName(sFileName);
+    if(mFile.open(QIODevice::ReadOnly | QIODevice::Text) == false)
+    {
+        qDebug() << "Failed to open file";
+        return;
+    }
+
+    mTextStream.setDevice(&mFile);
+    readNextLine();
 }
 
 void CDlgMain::slotBtnNextTR(void)
 {
+    readNextLine();
+    mFile.close();
+}
 
+void CDlgMain::readNextLine(void)
+{
+    QString sReadLine;
+
+    while (mTextStream.atEnd() == false)
+    {
+        sReadLine = mTextStream.readLine();
+
+        if (sReadLine.length() >= mColonPos && sReadLine.at(mColonPos) == ':')
+        {
+            ui->teLog1->setText(sReadLine.mid(mColonPos + 1));
+
+            // EpochTime 변환
+            qint64 iEpochTime = sReadLine.left(mColonPos).toLongLong();
+            iEpochTime = iEpochTime / 1000;
+            QDateTime dDateTime = dDateTime.fromMSecsSinceEpoch(iEpochTime);
+            ui->leRcvTM->setText(dDateTime.toString("HH:mm:ss.zzz"));
+            break;
+        }
+    }
+
+    return;
 }
