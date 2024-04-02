@@ -48,27 +48,37 @@ void CDlgMain::slotBtnOpenFile(void)
 void CDlgMain::slotBtnNextTR(void)
 {
     readNextLine();
-    mFile.close();
 }
 
 void CDlgMain::readNextLine(void)
 {
     QString sReadLine;
 
-    while (mTextStream.atEnd() == false)
+    for (;;)
     {
-        sReadLine = mTextStream.readLine();
-
-        if (sReadLine.length() >= mColonPos && sReadLine.at(mColonPos) == ':')
+        if (mTextStream.atEnd() == false)
         {
-            ui->teLog1->setText(sReadLine.mid(mColonPos + 1));
+            sReadLine = mTextStream.readLine();
 
-            // EpochTime 변환
-            qint64 iEpochTime = sReadLine.left(mColonPos).toLongLong();
-            iEpochTime = iEpochTime / 1000;
-            QDateTime dDateTime = dDateTime.fromMSecsSinceEpoch(iEpochTime);
-            ui->leRcvTM->setText(dDateTime.toString("HH:mm:ss.zzz"));
-            break;
+            if (sReadLine.length() >= mColonPos && sReadLine.at(mColonPos) == ':')
+            {
+                ui->teLog1->setText(sReadLine.mid(mColonPos + 1));
+
+                // EpochTime 변환
+                qint64 iEpochTime = sReadLine.left(mColonPos).toLongLong();
+                iEpochTime = iEpochTime / 1000;
+                QDateTime dDateTime = dDateTime.fromMSecsSinceEpoch(iEpochTime);
+                ui->leRcvTM->setText(dDateTime.toString("HH:mm:ss.zzz"));
+                break;
+            }
+        }
+        else
+        {
+            if (mFile.isOpen() == true)
+                mFile.close();
+
+            ui->teLog1->setText("end of file");
+            return;
         }
     }
 
