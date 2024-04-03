@@ -2,6 +2,7 @@
 #define CDLGMAIN_HPP
 
 #include <QMainWindow>
+#include <QFile>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -23,5 +24,10 @@ private:
 private slots:
     void slotBtnOpenFile(void);
     void slotBtnNextTR(void);
+
+private:
+    QFile mFile;
+    QTextStream mTxtStream;
+    const quint16 lenEpochTime = 16;
 };
 #endif // CDLGMAIN_HPP
