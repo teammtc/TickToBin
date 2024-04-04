@@ -1,7 +1,6 @@
 #include "CDlgMain.hpp"
 #include "ui_CDlgMain.h"
 #include <QFileDialog>
-#include <QTextCodec>
 
 CDlgMain::CDlgMain(QWidget *parent)
     : QMainWindow(parent)
@@ -42,7 +41,6 @@ void CDlgMain::slotBtnOpenFile(void)
 void CDlgMain::slotBtnNextTR(void)
 {
     QString strLine, strTmp;
-    QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
 
     while (!mTxtStream.atEnd())
     {
