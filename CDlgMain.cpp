@@ -36,6 +36,9 @@ void CDlgMain::slotBtnOpenFile(void)
     }
 
     mTxtStream.setDevice(&mFile);
+    // 텍스트 스트림이 어떤 방식으로 디코딩 할 것인지 결정해 준다.
+    // QStringConverter::System을 채택 -> 현재 시스템의 로캘 정보를 그대로 적용해 주도록 설정.
+    mTxtStream.setEncoding(QStringConverter::System);
 }
 
 void CDlgMain::slotBtnNextTR(void)
