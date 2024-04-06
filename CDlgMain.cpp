@@ -14,6 +14,71 @@ CDlgMain::CDlgMain(QWidget *parent)
 #elif RELEASE
     this->setWindowTitle("TickToBin " + iStr2);
 #endif
+
+    QString sTrFilePath = "D:/스터디/시세/U20240116/tr_list_240406.txt";
+    QFile fTrFile(sTrFilePath);
+    if(fTrFile.open(QIODevice::ReadOnly | QIODevice::Text) == false)
+    {
+        qDebug() << "Failed to open TR file";
+        return;
+    }
+
+    QTextStream tsTrStream(&fTrFile);
+    QStringList slTrList;
+    QString     sReadLine;
+
+    for (;;)
+    {
+        if (tsTrStream.atEnd() == false)
+        {
+            sReadLine = tsTrStream.readLine();
+            slTrList << sReadLine.split(',');
+        }
+        else
+        {
+            if (fTrFile.isOpen() == true)
+                fTrFile.close();
+
+            break;
+        }
+    }
+
+    QStringList slAddTrList, slDelTrList;
+
+    // 범위(~) 개별TR로 변경
+    for (auto&& trUnit : slTrList)
+    {
+        trUnit = trUnit.remove(' ');
+
+        if (trUnit.indexOf('~') > 0)
+        {
+            slDelTrList << trUnit;
+            QString sStartTr = trUnit.left(trUnit.indexOf('~')    );
+            QString sEndTr   = trUnit.mid (trUnit.indexOf('~') + 1);
+
+            int iStartNum = sStartTr.mid(1, 3).toInt();
+            int iEndNum   = sEndTr.mid(1, 3).toInt();
+
+            for (int iIdx = iStartNum; iIdx <= iEndNum; ++iIdx)
+            {
+                QString sAddTrNm = trUnit.at(0) +
+                                   QString("%1").arg(iIdx, 3, 10, QChar('0')) +
+                                   trUnit.at(4);
+                slAddTrList << sAddTrNm;
+            }
+        }
+    }
+
+    for (auto&& delTr : slDelTrList)
+        slTrList.removeOne(delTr);
+
+    slTrList << slAddTrList;
+
+    for (auto&& trUnit : slTrList)
+    {
+        trInfo_ST trInfo_st;
+        mReqTrMap.insert(trUnit, trInfo_st);
+    }
 }
 
 CDlgMain::~CDlgMain()
@@ -25,7 +90,7 @@ void CDlgMain::slotBtnOpenFile(void)
 {
     QString sFileName = QFileDialog::getOpenFileName(nullptr
                                                      , tr("Open File")
-                                                     , "D:/스터디/시세/U20240116"
+                                                     , tr("D:/스터디/시세/U20240116/")
                                                      , tr("Text files (*.txt)"));
 
     if (sFileName.isEmpty() == true)
@@ -37,7 +102,7 @@ void CDlgMain::slotBtnOpenFile(void)
     mFile.setFileName(sFileName);
     if(mFile.open(QIODevice::ReadOnly | QIODevice::Text) == false)
     {
-        qDebug() << "Failed to open file";
+        qDebug() << "Failed to open " << sFileName << " file";
         return;
     }
 

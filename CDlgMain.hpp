@@ -12,6 +12,16 @@ class CDlgMain;
 }
 QT_END_NAMESPACE
 
+struct trInfo_ST
+{
+    int mCnt;
+
+    trInfo_ST()
+    {
+        mCnt = 0;
+    }
+};
+
 class CDlgMain : public QMainWindow
 {
     Q_OBJECT
@@ -27,6 +37,8 @@ private:
     Ui::CDlgMain *ui;
     QFile         mFile;
     QTextStream   mTextStream;
+
+    QMap<QString, trInfo_ST> mReqTrMap;
 
 private slots:
     void slotBtnOpenFile(void);
