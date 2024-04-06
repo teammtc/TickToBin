@@ -54,13 +54,22 @@ void CDlgMain::slotBtnNextTR(void)
         if (strLine.length() >= lenEpochTime && strLine.at(lenEpochTime) == ':')
         {
             strTmp = strLine.mid(lenEpochTime + 1);
-            ui->teLog1->setText(strTmp);
 
-            qint64 epochTime = strLine.left(lenEpochTime).toLongLong();
-            epochTime = epochTime / 1000;
-            QDateTime dateTime = dateTime.fromMSecsSinceEpoch(epochTime);
-            ui->leRcvTM->setText(dateTime.toString("HH:mm:ss.zzz"));
-            break;
+            // 'I702S' 등과 같이 첫 5자리의 TR 문자열만을 추려낸다.
+            QString strTmpTrCode = strTmp.mid(0, 5);
+            qDebug() << strTmpTrCode;
+
+            // 추려낸 TR이 버릴 수 없는 TR 목록에 들어가 있는지 여부를 먼저 확인.
+            if(std::find(TR_CODES.begin(), TR_CODES.end(), strTmpTrCode) != TR_CODES.end())
+            {
+                ui->teLog1->setText(strTmp);
+
+                qint64 epochTime = strLine.left(lenEpochTime).toLongLong();
+                epochTime = epochTime / 1000;
+                QDateTime dateTime = dateTime.fromMSecsSinceEpoch(epochTime);
+                ui->leRcvTM->setText(dateTime.toString("HH:mm:ss.zzz"));
+                break;
+            }
         }
 
     }
