@@ -23,16 +23,46 @@ CDlgMain::CDlgMain(QWidget *parent)
         return;
     }
 
+    // TR목록파일을 QMap에 Insert
     QTextStream tsTrStream(&fTrFile);
-    QStringList slTrList;
+    QStringList slSplitList;
     QString     sReadLine;
+    trInfo_ST trInfo_st;
 
     for (;;)
     {
         if (tsTrStream.atEnd() == false)
         {
             sReadLine = tsTrStream.readLine();
-            slTrList << sReadLine.split(',');
+            trInfo_st.mLength = sReadLine.mid(sReadLine.indexOf(':') + 1).toInt();
+
+            slSplitList.clear();
+            slSplitList << sReadLine.split(',');
+
+            // 범위(~) 개별TR로 변경
+            for (auto&& trUnit : slSplitList)
+            {
+                trUnit = trUnit.remove(' ');
+
+                if (trUnit.indexOf('~') > 0)
+                {
+                    QString sStartTr = trUnit.left(trUnit.indexOf('~')    );
+                    QString sEndTr   = trUnit.mid (trUnit.indexOf('~') + 1);
+
+                    int iStartNum = sStartTr.mid(1, 3).toInt();
+                    int iEndNum   = sEndTr.mid(1, 3).toInt();
+
+                    for (int iIdx = iStartNum; iIdx <= iEndNum; ++iIdx)
+                    {
+                        QString sAddTrNm = trUnit.at(0) +
+                                           QString("%1").arg(iIdx, 3, 10, QChar('0')) +
+                                           trUnit.at(4);
+                        mReqTrMap.insert(sAddTrNm, trInfo_st);
+                    }
+                }
+                else
+                    mReqTrMap.insert(trUnit.left(5), trInfo_st);
+            }
         }
         else
         {
@@ -43,42 +73,14 @@ CDlgMain::CDlgMain(QWidget *parent)
         }
     }
 
-    QStringList slAddTrList, slDelTrList;
-
-    // 범위(~) 개별TR로 변경
-    for (auto&& trUnit : slTrList)
+    /* QMap데이터 확인
+    QMapIterator<QString, trInfo_ST> iter(mReqTrMap);
+    while (iter.hasNext())
     {
-        trUnit = trUnit.remove(' ');
-
-        if (trUnit.indexOf('~') > 0)
-        {
-            slDelTrList << trUnit;
-            QString sStartTr = trUnit.left(trUnit.indexOf('~')    );
-            QString sEndTr   = trUnit.mid (trUnit.indexOf('~') + 1);
-
-            int iStartNum = sStartTr.mid(1, 3).toInt();
-            int iEndNum   = sEndTr.mid(1, 3).toInt();
-
-            for (int iIdx = iStartNum; iIdx <= iEndNum; ++iIdx)
-            {
-                QString sAddTrNm = trUnit.at(0) +
-                                   QString("%1").arg(iIdx, 3, 10, QChar('0')) +
-                                   trUnit.at(4);
-                slAddTrList << sAddTrNm;
-            }
-        }
+        iter.next();
+        qDebug() << iter.key() << " " << iter.value().mLength;
     }
-
-    for (auto&& delTr : slDelTrList)
-        slTrList.removeOne(delTr);
-
-    slTrList << slAddTrList;
-
-    for (auto&& trUnit : slTrList)
-    {
-        trInfo_ST trInfo_st;
-        mReqTrMap.insert(trUnit, trInfo_st);
-    }
+    */
 }
 
 CDlgMain::~CDlgMain()

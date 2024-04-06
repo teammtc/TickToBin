@@ -15,10 +15,12 @@ QT_END_NAMESPACE
 struct trInfo_ST
 {
     int mCnt;
+    int mLength;
 
     trInfo_ST()
     {
-        mCnt = 0;
+        mCnt    = 0;
+        mLength = 0;
     }
 };
 
