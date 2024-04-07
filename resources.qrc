@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>D:/tr_list_240406.txt</file>
+    </qresource>
+</RCC>

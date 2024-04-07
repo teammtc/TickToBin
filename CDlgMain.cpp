@@ -15,7 +15,7 @@ CDlgMain::CDlgMain(QWidget *parent)
     this->setWindowTitle("TickToBin " + iStr2);
 #endif
 
-    QString sTrFilePath = "D:/스터디/시세/U20240116/tr_list_240406.txt";
+    QString sTrFilePath = ":/tr_list_240406.txt";
     QFile fTrFile(sTrFilePath);
     if(fTrFile.open(QIODevice::ReadOnly | QIODevice::Text) == false)
     {
