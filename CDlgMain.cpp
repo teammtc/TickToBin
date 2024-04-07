@@ -54,14 +54,14 @@ CDlgMain::CDlgMain(QWidget *parent)
 
                     for (int iIdx = iStartNum; iIdx <= iEndNum; ++iIdx)
                     {
-                        QString sAddTrNm = trUnit.at(0) +
-                                           QString("%1").arg(iIdx, 3, 10, QChar('0')) +
-                                           trUnit.at(4);
-                        mReqTrMap.insert(sAddTrNm, trInfo_st);
+                        QString sAddTrCode = trUnit.at(0) +
+                                             QString("%1").arg(iIdx, 3, 10, QChar('0')) +
+                                             trUnit.at(4);
+                        mReqTrMap.insert(sAddTrCode, trInfo_st);
                     }
                 }
                 else
-                    mReqTrMap.insert(trUnit.left(5), trInfo_st);
+                    mReqTrMap.insert(trUnit.left(mTrCodeLen), trInfo_st);
             }
         }
         else
@@ -92,7 +92,7 @@ void CDlgMain::slotBtnOpenFile(void)
 {
     QString sFileName = QFileDialog::getOpenFileName(nullptr
                                                      , tr("Open File")
-                                                     , tr("D:/스터디/시세/U20240116/")
+                                                     , QDir::homePath()
                                                      , tr("Text files (*.txt)"));
 
     if (sFileName.isEmpty() == true)
@@ -120,7 +120,8 @@ void CDlgMain::slotBtnNextTR(void)
 
 void CDlgMain::readNextLine(void)
 {
-    QString sReadLine;
+    QString sReadLine, sTrText, sTrCode;
+    QByteArray tmpByteArr;
 
     for (;;)
     {
@@ -130,14 +131,32 @@ void CDlgMain::readNextLine(void)
 
             if (sReadLine.length() >= mColonPos && sReadLine.at(mColonPos) == ':')
             {
-                ui->teLog1->setText(sReadLine.mid(mColonPos + 1));
+                sTrText = sReadLine.mid(mColonPos + 1);
+                sTrCode = sTrText.left(mTrCodeLen);
 
-                // EpochTime 변환
-                qint64 iEpochTime = sReadLine.left(mColonPos).toLongLong();
-                iEpochTime = iEpochTime / 1000;
-                QDateTime dDateTime = dDateTime.fromMSecsSinceEpoch(iEpochTime);
-                ui->leRcvTM->setText(dDateTime.toString("HH:mm:ss.zzz"));
-                break;
+                auto iterReqTrMap = mReqTrMap.find(sTrCode);
+
+                if (iterReqTrMap != mReqTrMap.end())
+                {
+                    tmpByteArr = sTrText.toLocal8Bit();
+
+                    if (tmpByteArr.length() + 1 == iterReqTrMap.value().mLength)
+                    {
+                        ui->teLog1->setText(sTrText);
+
+                        // EpochTime 변환
+                        qint64 iEpochTime = sReadLine.left(mColonPos).toLongLong();
+                        iEpochTime = iEpochTime / 1000;
+                        QDateTime dDateTime = dDateTime.fromMSecsSinceEpoch(iEpochTime);
+                        ui->leRcvTM->setText(dDateTime.toString("HH:mm:ss.zzz"));
+                        break;
+                    }
+                    else
+                    {
+                        ui->teLog1->setText(sTrCode + " 정상수신실패");
+                        break;
+                    }
+                }
             }
         }
         else

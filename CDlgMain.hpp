@@ -33,7 +33,8 @@ public:
     ~CDlgMain();
     void readNextLine(void);
 
-    constexpr static int8_t mColonPos = 16;
+    constexpr static int8_t mColonPos  = 16;
+    constexpr static int8_t mTrCodeLen = 5;
 
 private:
     Ui::CDlgMain *ui;
