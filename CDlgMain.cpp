@@ -49,19 +49,22 @@ void CDlgMain::slotBtnNextTR(void)
     {
         strLine = mTxtStream.readLine();
 
+        strTmp = strLine.mid(lenEpochTime + 1);
+
+        // 'I702S' 등과 같이 첫 5자리의 TR 문자열만을 추려낸다.
+        QString strTmpTrCode = strTmp.mid(0, 5);
+        qDebug() << strTmpTrCode;
+
         // TR 정보는 16자리의 epoch time 그리고 콜론으로 시작하므로, 이 라인들만 골라내기 위한 조건
         // 1705351201881283:I702S00000010KRA5812AXDB30001720231127202408010000000001000000000000R0000000000015.0000000000000000003000300000000000000000000.000000000000000005000.000000000000000000000.000000000000000000000.000
         if (strLine.length() >= lenEpochTime && strLine.at(lenEpochTime) == ':')
         {
-            strTmp = strLine.mid(lenEpochTime + 1);
-
-            // 'I702S' 등과 같이 첫 5자리의 TR 문자열만을 추려낸다.
-            QString strTmpTrCode = strTmp.mid(0, 5);
-            qDebug() << strTmpTrCode;
-
             // 추려낸 TR이 버릴 수 없는 TR 목록에 들어가 있는지 여부를 먼저 확인.
-            if(std::find(TR_CODES.begin(), TR_CODES.end(), strTmpTrCode) != TR_CODES.end())
+            if(mTR_CODE_SIZE.contains(strTmpTrCode))
             {
+                QByteArray bytes = strTmp.toUtf8();
+                qDebug() << "length: " << bytes.length();
+
                 ui->teLog1->setText(strTmp);
 
                 qint64 epochTime = strLine.left(lenEpochTime).toLongLong();
