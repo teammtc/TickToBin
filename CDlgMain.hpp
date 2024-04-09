@@ -15,7 +15,7 @@ QT_END_NAMESPACE
 struct trInfo_ST
 {
     int mCnt;
-    int mLength;
+    int16_t mLength;
 
     trInfo_ST()
     {
@@ -33,8 +33,8 @@ public:
     ~CDlgMain();
     void readNextLine(void);
 
-    constexpr static int8_t mColonPos  = 16;
-    constexpr static int8_t mTrCodeLen = 5;
+    constexpr static int8_t mCOLON_POS  = 16;
+    constexpr static int8_t mTR_CODE_LEN = 5;
 
 private:
     Ui::CDlgMain *ui;
