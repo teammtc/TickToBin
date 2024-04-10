@@ -26,7 +26,6 @@ void CDlgMain::slotBtnOpenFile(void)
 {
     // .txt 형태의 파일을 선택할 수 있는 다이얼로그
     QString filename = QFileDialog::getOpenFileName(this, "파일 선택", QDir::currentPath(), "Files (*.txt)");
-    qDebug() << "filename: " << filename;
 
     mFile.setFileName(filename);
     if(mFile.open(QIODevice::ReadOnly | QIODevice::Text) == false)
@@ -45,32 +44,45 @@ void CDlgMain::slotBtnNextTR(void)
 {
     QString strLine, strTmp;
 
-    while (!mTxtStream.atEnd())
+    while (true)
     {
-        strLine = mTxtStream.readLine();
-
-        // 'I702S' 등과 같이 첫 5자리의 TR 문자열만을 추려낸다.
-        strTmp = strLine.mid(lenEpochTime + 1);
-        QString strTmpTrCode = strTmp.mid(0, 5);
-        qDebug() << strTmpTrCode;
-
-        // TR 정보는 16자리의 epoch time 그리고 콜론으로 시작하므로, 이 라인들만 골라내기 위한 조건
-        // 1705351201881283:I702S00000010KRA5812AXDB30001720231127202408010000000001000000000000R0000000000015.0000000000000000003000300000000000000000000.000000000000000005000.000000000000000000000.000000000000000000000.000
-        // 추려낸 TR이 버릴 수 없는 TR 목록에 들어가 있는지 여부를 먼저 확인.
-        if (strLine.length() >= lenEpochTime && strLine.at(lenEpochTime) == ':' && mTR_CODE_SIZE.contains(strTmpTrCode))
+        if(!mTxtStream.atEnd())
         {
-            QByteArray bytes = strTmp.toUtf8();
-            qDebug() << "length: " << bytes.length();
+            strLine = mTxtStream.readLine();
 
-            ui->teLog1->setText(strTmp);
+            if(mFile.isOpen())
+            {
+                qDebug() << "file is open";
+            }
 
-            qint64 epochTime = strLine.left(lenEpochTime).toLongLong();
-            epochTime = epochTime / 1000;
-            QDateTime dateTime = dateTime.fromMSecsSinceEpoch(epochTime);
-            ui->leRcvTM->setText(dateTime.toString("HH:mm:ss.zzz"));
-            break;
+            // 'I702S' 등과 같이 첫 5자리의 TR 문자열만을 추려낸다.
+            strTmp = strLine.mid(lenEpochTime + 1);
+            QString strTmpTrCode = strTmp.mid(0, 5);
+
+            // TR 정보는 16자리의 epoch time 그리고 콜론으로 시작하므로, 이 라인들만 골라내기 위한 조건
+            // 1705351201881283:I702S00000010KRA5812AXDB30001720231127202408010000000001000000000000R0000000000015.0000000000000000003000300000000000000000000.000000000000000005000.000000000000000000000.000000000000000000000.000
+            // 추려낸 TR이 버릴 수 없는 TR 목록에 들어가 있는지 여부를 먼저 확인.
+            if (strLine.length() >= lenEpochTime && strLine.at(lenEpochTime) == ':' && mTR_CODE_SIZE.contains(strTmpTrCode))
+            {
+                trInterface strctTr = mTR_CODE_SIZE.value(strTmpTrCode);
+                qDebug() << "Data length specification for " << strTmpTrCode << ": " << strctTr.size;
+                qDebug() << "Actual line length for " << strTmpTrCode << ": " << strLine.length();
+
+                ui->teLog1->setText(strTmp);
+
+                qint64 epochTime = strLine.left(lenEpochTime).toLongLong();
+                epochTime = epochTime / 1000;
+                QDateTime dateTime = dateTime.fromMSecsSinceEpoch(epochTime);
+                ui->leRcvTM->setText(dateTime.toString("HH:mm:ss.zzz"));
+                break;
+            }
+        }
+        else
+        {
+            // 다시 텍스트 스트림이 문자열을 읽어들일 수 있도록 리셋
+            mTxtStream.device()->reset();
+            return;
         }
     }
-    mFile.close();
     return;
 }
