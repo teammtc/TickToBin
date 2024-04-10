@@ -16,12 +16,6 @@ struct trInfo_ST
 {
     int mCnt;
     int16_t mLength;
-
-    trInfo_ST()
-    {
-        mCnt    = 0;
-        mLength = 0;
-    }
 };
 
 class CDlgMain : public QMainWindow
@@ -33,8 +27,8 @@ public:
     ~CDlgMain();
     void readNextLine(void);
 
-    constexpr static int8_t mCOLON_POS  = 16;
-    constexpr static int8_t mTR_CODE_LEN = 5;
+    constexpr static size_t mCOLON_POS  = 16;
+    constexpr static size_t mTR_CODE_LEN = 5;
 
 private:
     Ui::CDlgMain *ui;

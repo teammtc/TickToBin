@@ -181,6 +181,7 @@ CDlgMain::CDlgMain(QWidget *parent)
     trInfo_ST initTrInfo;
     for(auto&& elemVec : initVec)
     {
+        initTrInfo.mCnt    = 0;
         initTrInfo.mLength = elemVec.second;
         mReqTrMap.insert(elemVec.first, initTrInfo);
     }
