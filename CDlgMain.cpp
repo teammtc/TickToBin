@@ -7,7 +7,7 @@ CDlgMain::CDlgMain(QWidget *parent)
 {
     ui->setupUi(this);
 
-    QString iStr2 = "v0.01 <2024.03.25(01)>";
+    QString iStr2 = "v0.01 <2024.04.10(01)>";
 
 #if DEBUG
     this->setWindowTitle("TickToBin (DEBUG Mode) " + iStr2);
