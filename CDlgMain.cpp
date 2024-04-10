@@ -178,7 +178,7 @@ CDlgMain::CDlgMain(QWidget *parent)
     initVec.append(qMakePair("B904S", 414));
     initVec.append(qMakePair("B901Q", 414));
 
-    trInfo_ST initTrInfo;
+    trInfo_st initTrInfo;
     for(auto&& elemVec : initVec)
     {
         initTrInfo.mCnt    = 0;
@@ -187,7 +187,7 @@ CDlgMain::CDlgMain(QWidget *parent)
     }
 
     //QMap데이터 확인
-    /*QMapIterator<QString, trInfo_ST> iter(mReqTrMap);
+    /*QMapIterator<QString, trInfo_st> iter(mReqTrMap);
     while (iter.hasNext())
     {
         iter.next();

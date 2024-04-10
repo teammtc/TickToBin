@@ -12,9 +12,9 @@ class CDlgMain;
 }
 QT_END_NAMESPACE
 
-struct trInfo_ST
+struct trInfo_st
 {
-    int mCnt;
+    int64_t mCnt;
     int16_t mLength;
 };
 
@@ -27,15 +27,15 @@ public:
     ~CDlgMain();
     void readNextLine(void);
 
-    constexpr static size_t mCOLON_POS  = 16;
-    constexpr static size_t mTR_CODE_LEN = 5;
+    constexpr static qsizetype mCOLON_POS  = 16;
+    constexpr static qsizetype mTR_CODE_LEN = 5;
 
 private:
     Ui::CDlgMain *ui;
     QFile         mFile;
     QTextStream   mTextStream;
 
-    QMap<QString, trInfo_ST> mReqTrMap;
+    QMap<QString, trInfo_st> mReqTrMap;
 
 private slots:
     void slotBtnOpenFile(void);
