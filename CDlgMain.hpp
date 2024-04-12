@@ -40,5 +40,6 @@ private:
 private slots:
     void slotBtnOpenFile(void);
     void slotBtnNextTR(void);
+    void slotBtnStatsTR(void);
 };
 #endif // CDLGMAIN_HPP

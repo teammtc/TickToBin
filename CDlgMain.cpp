@@ -231,6 +231,15 @@ void CDlgMain::slotBtnNextTR(void)
     readNextLine();
 }
 
+void CDlgMain::slotBtnStatsTR(void)
+{
+    // 버튼이 활성화 된 상태인지 한번 더 확인
+    if(ui->btnStatsTR->isEnabled())
+    {
+         qDebug() << "clicked btnStatsTR.";
+    }
+}
+
 void CDlgMain::readNextLine(void)
 {
     QString sReadLine, sTrText, sTrCode;
@@ -261,6 +270,9 @@ void CDlgMain::readNextLine(void)
                     {
                         ui->teLog1->setText(sTrText);
 
+                        // TR 통계 목록 버튼 활성화
+                        ui->btnStatsTR->setEnabled(true);
+
                         // EpochTime 변환
                         qint64 iEpochTime = sReadLine.left(mCOLON_POS).toLongLong();
                         iEpochTime = iEpochTime / 1000;
@@ -270,6 +282,9 @@ void CDlgMain::readNextLine(void)
                     }
                     else
                     {
+                        // TR 통계 목록 버튼 비활성화
+                        ui->btnStatsTR->setEnabled(false);
+
                         ui->teLog1->setText(sTrCode + " 정상수신실패");
                         break;
                     }

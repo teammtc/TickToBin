@@ -139,7 +139,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>17</height>
+     <height>22</height>
     </rect>
    </property>
   </widget>
@@ -178,9 +178,26 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>btnStatsTR</sender>
+   <signal>clicked()</signal>
+   <receiver>CDlgMain</receiver>
+   <slot>slotBtnStatsTR()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>61</x>
+     <y>101</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>slotBtnOpenFile()</slot>
   <slot>slotBtnNextTR()</slot>
+  <slot>slotBtnStatsTR()</slot>
  </slots>
 </ui>
