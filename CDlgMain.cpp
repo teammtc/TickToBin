@@ -194,11 +194,19 @@ CDlgMain::CDlgMain(QWidget *parent)
         qDebug() << iter.key() << " " << iter.value().mLength;
     }
     */
+
+    mpThDataReader = std::make_unique<CThDataReader>();
+    mpFile = std::make_unique<QFile>();
+
+    // CDlgMain의 sigProcessFile이 호출되면 CThDataReader의 slotProcessFile에서 받는다.
+    QObject::connect(this, SIGNAL(sigProcessFile(QFile*)), mpThDataReader.get(), SLOT(slotProcessFile(QFile*)), Qt::QueuedConnection);
 }
 
 CDlgMain::~CDlgMain()
 {
     delete ui;
+    mpThDataReader->quit();
+    mpThDataReader->wait();
 }
 
 void CDlgMain::slotBtnOpenFile(void)
@@ -214,21 +222,21 @@ void CDlgMain::slotBtnOpenFile(void)
         return;
     }
 
-    mFile.setFileName(sFileName);
-    if(mFile.open(QIODevice::ReadOnly | QIODevice::Text) == false)
+    mpFile->setFileName(sFileName);
+    if(mpFile->open(QIODevice::ReadOnly | QIODevice::Text) == false)
     {
         qDebug() << "Failed to open " << sFileName << " file";
         return;
     }
 
-    mTextStream.setDevice(&mFile);
+    mTextStream.setDevice(mpFile.get());
     mTextStream.setEncoding(QStringConverter::System);
-    readNextLine();
 }
 
 void CDlgMain::slotBtnNextTR(void)
 {
-    readNextLine();
+    emit sigProcessFile(mpFile.get());
+    mpThDataReader->start();
 }
 
 void CDlgMain::slotBtnStatsTR(void)
@@ -249,52 +257,47 @@ void CDlgMain::readNextLine(void)
     {
         if (mTextStream.atEnd() == false)
         {
-            sReadLine = mTextStream.readLine();
+            qDebug() << "reading..";
+            // sReadLine = mTextStream.readLine();
 
-            // epoch time이 마이크로 단위라 16자리
-            // 따라서 읽은 Line이 16자리 이상이고 그다음 콜론(:)이 온다면 유효한 TR로 간주
-            if (sReadLine.length() >= mCOLON_POS && sReadLine.at(mCOLON_POS) == ':')
-            {
-                sTrText = sReadLine.mid(mCOLON_POS + 1);
-                sTrCode = sTrText.left(mTR_CODE_LEN);
+            // // epoch time이 마이크로 단위라 16자리
+            // // 따라서 읽은 Line이 16자리 이상이고 그다음 콜론(:)이 온다면 유효한 TR로 간주
+            // if (sReadLine.length() >= mCOLON_POS && sReadLine.at(mCOLON_POS) == ':')
+            // {
+            //     sTrText = sReadLine.mid(mCOLON_POS + 1);
+            //     sTrCode = sTrText.left(mTR_CODE_LEN);
 
-                auto iterReqTrMap = mReqTrMap.find(sTrCode);
+            //     auto iterReqTrMap = mReqTrMap.find(sTrCode);
 
-                // 버릴 수 없는 TR목록에 포함되면 처리
-                if (iterReqTrMap != mReqTrMap.end())
-                {
-                    // 한글자리수 계산을 위해 ByteArr 사용
-                    tmpByteArr = sTrText.toLocal8Bit();
+            //     // 버릴 수 없는 TR목록에 포함되면 처리
+            //     if (iterReqTrMap != mReqTrMap.end())
+            //     {
+            //         // 한글자리수 계산을 위해 ByteArr 사용
+            //         tmpByteArr = sTrText.toLocal8Bit();
 
-                    if (tmpByteArr.length() + 1 == iterReqTrMap.value().mLength)
-                    {
-                        ui->teLog1->setText(sTrText);
+            //         if (tmpByteArr.length() + 1 == iterReqTrMap.value().mLength)
+            //         {
+            //             ui->teLog1->setText(sTrText);
 
-                        // TR 통계 목록 버튼 활성화
-                        ui->btnStatsTR->setEnabled(true);
-
-                        // EpochTime 변환
-                        qint64 iEpochTime = sReadLine.left(mCOLON_POS).toLongLong();
-                        iEpochTime = iEpochTime / 1000;
-                        QDateTime dDateTime = dDateTime.fromMSecsSinceEpoch(iEpochTime);
-                        ui->leRcvTM->setText(dDateTime.toString("HH:mm:ss.zzz"));
-                        break;
-                    }
-                    else
-                    {
-                        // TR 통계 목록 버튼 비활성화
-                        ui->btnStatsTR->setEnabled(false);
-
-                        ui->teLog1->setText(sTrCode + " 정상수신실패");
-                        break;
-                    }
-                }
-            }
+            //             // EpochTime 변환
+            //             qint64 iEpochTime = sReadLine.left(mCOLON_POS).toLongLong();
+            //             iEpochTime = iEpochTime / 1000;
+            //             QDateTime dDateTime = dDateTime.fromMSecsSinceEpoch(iEpochTime);
+            //             ui->leRcvTM->setText(dDateTime.toString("HH:mm:ss.zzz"));
+            //             break;
+            //         }
+            //         else
+            //         {
+            //             ui->teLog1->setText(sTrCode + " 정상수신실패");
+            //             break;
+            //         }
+            //     }
+            // }
         }
         else
         {
-            if (mFile.isOpen() == true)
-                mFile.close();
+            if (mpFile->isOpen() == true)
+                mpFile->close();
 
             ui->teLog1->setText("end of file");
             return;

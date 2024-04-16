@@ -5,6 +5,7 @@
 #include <QFileDialog>
 #include <QFile>
 #include <QTextStream>
+#include "CThDataReader.hpp"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -32,14 +33,19 @@ public:
 
 private:
     Ui::CDlgMain *ui;
-    QFile         mFile;
+    std::unique_ptr<QFile> mpFile;
     QTextStream   mTextStream;
 
     QMap<QString, trInfo_st> mReqTrMap;
+    std::unique_ptr<CThDataReader> mpThDataReader;
+
+signals:
+    void sigProcessFile(QFile*);
 
 private slots:
     void slotBtnOpenFile(void);
     void slotBtnNextTR(void);
     void slotBtnStatsTR(void);
+
 };
 #endif // CDLGMAIN_HPP
