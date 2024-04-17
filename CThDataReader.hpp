@@ -3,16 +3,29 @@
 
 #include <QThread>
 #include <QFile>
+#include <QTextStream>
+
+enum class ThStatus
+{
+    Init = 0,
+    Running,
+    Stopped
+};
 
 class CThDataReader : public QThread
 {
     Q_OBJECT
 
 private:
-    QFile mFile;
+    std::unique_ptr<QFile> mpFile;
+    QTextStream mTextStream;
+    ThStatus mStatus = ThStatus::Init;
+    ThStatus getStatus();
+    void setStatus(ThStatus);
+    void processReading();
 
 private slots:
-    void slotProcessFile(QFile*);
+    void slotPrepareFile(QFile*);
 
 public:
     CThDataReader();

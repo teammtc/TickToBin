@@ -33,14 +33,13 @@ public:
 
 private:
     Ui::CDlgMain *ui;
-    std::unique_ptr<QFile> mpFile;
-    QTextStream   mTextStream;
 
     QMap<QString, trInfo_st> mReqTrMap;
+    std::unique_ptr<QFile> mpFile;
     std::unique_ptr<CThDataReader> mpThDataReader;
 
 signals:
-    void sigProcessFile(QFile*);
+    void sigPrepareFile(QFile*);
 
 private slots:
     void slotBtnOpenFile(void);

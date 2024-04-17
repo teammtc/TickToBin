@@ -198,8 +198,8 @@ CDlgMain::CDlgMain(QWidget *parent)
     mpThDataReader = std::make_unique<CThDataReader>();
     mpFile = std::make_unique<QFile>();
 
-    // CDlgMain의 sigProcessFile이 호출되면 CThDataReader의 slotProcessFile에서 받는다.
-    QObject::connect(this, SIGNAL(sigProcessFile(QFile*)), mpThDataReader.get(), SLOT(slotProcessFile(QFile*)), Qt::QueuedConnection);
+    // CDlgMain의 sigPrepareFile이 호출되면 CThDataReader의 slotPrepareFile에서 받는다.
+    QObject::connect(this, SIGNAL(sigPrepareFile(QFile*)), mpThDataReader.get(), SLOT(slotPrepareFile(QFile*)), Qt::QueuedConnection);
 }
 
 CDlgMain::~CDlgMain()
@@ -229,13 +229,11 @@ void CDlgMain::slotBtnOpenFile(void)
         return;
     }
 
-    mTextStream.setDevice(mpFile.get());
-    mTextStream.setEncoding(QStringConverter::System);
+    emit sigPrepareFile(mpFile.get());
 }
 
 void CDlgMain::slotBtnNextTR(void)
 {
-    emit sigProcessFile(mpFile.get());
     mpThDataReader->start();
 }
 
@@ -245,64 +243,11 @@ void CDlgMain::slotBtnStatsTR(void)
     if(ui->btnStatsTR->isEnabled())
     {
          qDebug() << "clicked btnStatsTR.";
+        ui->btnStatsTR->setEnabled(false);
     }
 }
 
 void CDlgMain::readNextLine(void)
 {
-    QString sReadLine, sTrText, sTrCode;
-    QByteArray tmpByteArr;
 
-    while (true)
-    {
-        if (mTextStream.atEnd() == false)
-        {
-            qDebug() << "reading..";
-            // sReadLine = mTextStream.readLine();
-
-            // // epoch time이 마이크로 단위라 16자리
-            // // 따라서 읽은 Line이 16자리 이상이고 그다음 콜론(:)이 온다면 유효한 TR로 간주
-            // if (sReadLine.length() >= mCOLON_POS && sReadLine.at(mCOLON_POS) == ':')
-            // {
-            //     sTrText = sReadLine.mid(mCOLON_POS + 1);
-            //     sTrCode = sTrText.left(mTR_CODE_LEN);
-
-            //     auto iterReqTrMap = mReqTrMap.find(sTrCode);
-
-            //     // 버릴 수 없는 TR목록에 포함되면 처리
-            //     if (iterReqTrMap != mReqTrMap.end())
-            //     {
-            //         // 한글자리수 계산을 위해 ByteArr 사용
-            //         tmpByteArr = sTrText.toLocal8Bit();
-
-            //         if (tmpByteArr.length() + 1 == iterReqTrMap.value().mLength)
-            //         {
-            //             ui->teLog1->setText(sTrText);
-
-            //             // EpochTime 변환
-            //             qint64 iEpochTime = sReadLine.left(mCOLON_POS).toLongLong();
-            //             iEpochTime = iEpochTime / 1000;
-            //             QDateTime dDateTime = dDateTime.fromMSecsSinceEpoch(iEpochTime);
-            //             ui->leRcvTM->setText(dDateTime.toString("HH:mm:ss.zzz"));
-            //             break;
-            //         }
-            //         else
-            //         {
-            //             ui->teLog1->setText(sTrCode + " 정상수신실패");
-            //             break;
-            //         }
-            //     }
-            // }
-        }
-        else
-        {
-            if (mpFile->isOpen() == true)
-                mpFile->close();
-
-            ui->teLog1->setText("end of file");
-            return;
-        }
-    }
-
-    return;
 }
