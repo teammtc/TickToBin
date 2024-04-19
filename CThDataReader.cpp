@@ -37,6 +37,38 @@ void CThDataReader::slotPrepareFile(QString strFile)
     }
     mTextStream.setDevice(mpFile.get());
     mTextStream.setEncoding(QStringConverter::System);
+
+    // 파일을 불러온 후, 제대로 된 시세파일인지 여부를 검사.
+    checkValidFile();
+}
+
+void CThDataReader::checkValidFile()
+{
+    QString sReadLine, sTrText, sTrCode;
+    QByteArray tmpByteArr;
+    while (true)
+    {
+        if (mTextStream.atEnd() == false)
+        {
+            sReadLine = mTextStream.readLine();
+
+            // epoch time이 마이크로 단위라 16자리
+            // 따라서 읽은 Line이 16자리 이상이고 그다음 콜론(:)이 온다면 유효한 TR로 간주
+            if (sReadLine.length() >= mCOLON_POS && sReadLine.at(mCOLON_POS) == ':')
+            {
+                sTrText = sReadLine.mid(mCOLON_POS + 1);
+                sTrCode = sTrText.left(mTR_CODE_LEN);
+
+                auto iterReqTrMap = mTR_CODE_SIZE.find(sTrCode);
+
+                if (iterReqTrMap != mTR_CODE_SIZE.end())
+                {
+                    emit sigValidFile();
+                    break;
+                }
+            }
+        }
+    }
 }
 
 void CThDataReader::processReading()
@@ -49,21 +81,20 @@ void CThDataReader::processReading()
         if (mTextStream.atEnd() == false)
         {
             sReadLine = mTextStream.readLine();
-            qDebug() << sReadLine;
 
-            // // epoch time이 마이크로 단위라 16자리
-            // // 따라서 읽은 Line이 16자리 이상이고 그다음 콜론(:)이 온다면 유효한 TR로 간주
-            // if (sReadLine.length() >= mCOLON_POS && sReadLine.at(mCOLON_POS) == ':')
-            // {
-            //     sTrText = sReadLine.mid(mCOLON_POS + 1);
-            //     sTrCode = sTrText.left(mTR_CODE_LEN);
+            // epoch time이 마이크로 단위라 16자리
+            // 따라서 읽은 Line이 16자리 이상이고 그다음 콜론(:)이 온다면 유효한 TR로 간주
+            if (sReadLine.length() >= mCOLON_POS && sReadLine.at(mCOLON_POS) == ':')
+            {
+                sTrText = sReadLine.mid(mCOLON_POS + 1);
+                sTrCode = sTrText.left(mTR_CODE_LEN);
 
-            //     auto iterReqTrMap = mReqTrMap.find(sTrCode);
+                auto iterReqTrMap = mTR_CODE_SIZE.find(sTrCode);
 
-            //     // 버릴 수 없는 TR목록에 포함되면 처리
-            //     if (iterReqTrMap != mReqTrMap.end())
-            //     {
-            //         // 한글자리수 계산을 위해 ByteArr 사용
+                // 버릴 수 없는 TR목록에 포함되면 처리
+                if (iterReqTrMap != mTR_CODE_SIZE.end())
+                {
+                    // 한글자리수 계산을 위해 ByteArr 사용
             //         tmpByteArr = sTrText.toLocal8Bit();
 
             //         if (tmpByteArr.length() + 1 == iterReqTrMap.value().mLength)
@@ -82,8 +113,8 @@ void CThDataReader::processReading()
             //             ui->teLog1->setText(sTrCode + " 정상수신실패");
             //             break;
             //         }
-            //     }
-            // }
+                }
+            }
         }
         else
         {
@@ -93,7 +124,6 @@ void CThDataReader::processReading()
             }
         }
     }
-
 }
 
 void CThDataReader::run()
