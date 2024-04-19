@@ -3,7 +3,7 @@
 
 CThDataReader::CThDataReader()
 {
-
+    mpFile = std::make_unique<QFile>();
 }
 
 CThDataReader::~CThDataReader()
@@ -21,10 +21,21 @@ void CThDataReader::setStatus(ThStatus status)
     mStatus = status;
 }
 
-void CThDataReader::slotPrepareFile(QFile* file)
+void CThDataReader::slotPrepareFile(QString strFile)
 {
-    mpFile = std::make_unique<QFile>(file);
-    mTextStream.setDevice(file);
+    if (strFile.isEmpty() == true)
+    {
+        qDebug() << "Failed to get file name";
+        return;
+    }
+
+    mpFile->setFileName(strFile);
+    if(mpFile->open(QIODevice::ReadOnly | QIODevice::Text) == false)
+    {
+        qDebug() << "Failed to open " << strFile << " file";
+        return;
+    }
+    mTextStream.setDevice(mpFile.get());
     mTextStream.setEncoding(QStringConverter::System);
 }
 

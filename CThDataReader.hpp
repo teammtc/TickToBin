@@ -25,7 +25,7 @@ private:
     void processReading();
 
 private slots:
-    void slotPrepareFile(QFile*);
+    void slotPrepareFile(QString);
 
 public:
     CThDataReader();

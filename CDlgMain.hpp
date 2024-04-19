@@ -39,7 +39,7 @@ private:
     std::unique_ptr<CThDataReader> mpThDataReader;
 
 signals:
-    void sigPrepareFile(QFile*);
+    void sigPrepareFile(QString);
 
 private slots:
     void slotBtnOpenFile(void);

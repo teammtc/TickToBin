@@ -199,7 +199,7 @@ CDlgMain::CDlgMain(QWidget *parent)
     mpFile = std::make_unique<QFile>();
 
     // CDlgMain의 sigPrepareFile이 호출되면 CThDataReader의 slotPrepareFile에서 받는다.
-    QObject::connect(this, SIGNAL(sigPrepareFile(QFile*)), mpThDataReader.get(), SLOT(slotPrepareFile(QFile*)), Qt::QueuedConnection);
+    QObject::connect(this, SIGNAL(sigPrepareFile(QString)), mpThDataReader.get(), SLOT(slotPrepareFile(QString)), Qt::QueuedConnection);
 }
 
 CDlgMain::~CDlgMain()
@@ -216,20 +216,7 @@ void CDlgMain::slotBtnOpenFile(void)
                                                      , QDir::homePath()
                                                      , tr("Text files (*.txt)"));
 
-    if (sFileName.isEmpty() == true)
-    {
-        qDebug() << "Failed to get file name";
-        return;
-    }
-
-    mpFile->setFileName(sFileName);
-    if(mpFile->open(QIODevice::ReadOnly | QIODevice::Text) == false)
-    {
-        qDebug() << "Failed to open " << sFileName << " file";
-        return;
-    }
-
-    emit sigPrepareFile(mpFile.get());
+    emit sigPrepareFile(sFileName);
 }
 
 void CDlgMain::slotBtnNextTR(void)
