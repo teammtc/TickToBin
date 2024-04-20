@@ -16,6 +16,7 @@ enum class ThStatus
 typedef struct strctInterface {
     QString interfaceNameKr;
     qint16 size;
+    qint64 occurrence = 0;
 } trInterface;
 
 const trInterface IFMSRPD0002 {"증권 우선호가 (MM/LP호가 제외)", 555};
@@ -54,7 +55,7 @@ private:
     void checkValidFile();
 
     // 버릴 수 없는 TR 목록 및 각 TR의 사이즈
-    const QMap<QString, strctInterface> mTR_CODE_SIZE {
+    const QMap<QString, trInterface> mapTrCode {
         {"B601S", IFMSRPD0002}, {"B601Q", IFMSRPD0002}, {"B702S", IFMSRPD0003}, {"B703S", IFMSRPD0003}, {"B704S", IFMSRPD0003},
         {"A301S", IFMSRPD0004}, {"A302S", IFMSRPD0004}, {"A303S", IFMSRPD0004}, {"A304S", IFMSRPD0004}, {"A301Q", IFMSRPD0004},
         {"G701S", IFMSRPD0006}, {"G701Q", IFMSRPD0006}, {"G702S", IFMSRPD0007}, {"G703S", IFMSRPD0007}, {"G704S", IFMSRPD0007},
@@ -88,6 +89,7 @@ private:
 
 signals:
     void sigValidFile();
+    void sigAnalyseData(QString);
 
 private slots:
     void slotPrepareFile(QString);

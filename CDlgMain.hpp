@@ -23,9 +23,9 @@ public:
 
 private:
     Ui::CDlgMain *ui;
-
     std::unique_ptr<QFile> mpFile;
     std::unique_ptr<CThDataReader> mpThDataReader;
+    QMap<QString, int> mMapTrCount;
 
 signals:
     void sigPrepareFile(QString);
@@ -35,6 +35,7 @@ private slots:
     void slotBtnNextTR(void);
     void slotBtnStatsTR(void);
     void slotValidFile();
+    void slotAnalyseData(QString);
 
 };
 #endif // CDLGMAIN_HPP

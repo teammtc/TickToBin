@@ -23,6 +23,9 @@ CDlgMain::CDlgMain(QWidget *parent)
 
     // CThDataReader에서 sigValidFile을 내보내면 CDlgMain에서 slotValidFile을 통해 받는다.
     QObject::connect(mpThDataReader.get(), SIGNAL(sigValidFile()), this, SLOT(slotValidFile()), Qt::QueuedConnection);
+
+    // CThDataReader에서 sigAnalyseData를 내보내면 CDlgMain에서 slotAnalyseData를 통해 받는다.
+    QObject::connect(mpThDataReader.get(), SIGNAL(sigAnalyseData(QString)), this, SLOT(slotAnalyseData(QString)), Qt::QueuedConnection);
 }
 
 CDlgMain::~CDlgMain()
@@ -61,4 +64,24 @@ void CDlgMain::slotValidFile()
 {
     qDebug() << "valid file.";
     ui->btnStatsTR->setEnabled(true);
+}
+
+void CDlgMain::slotAnalyseData(QString trCode)
+{
+    // map에 해당 TR 코드가 있으면
+    if(mMapTrCount.contains(trCode))
+    {
+        ++mMapTrCount[trCode];
+    }
+
+    // 없으면 신규 추가
+    else
+    {
+        mMapTrCount.insert(trCode, 1);
+    }
+
+    for(auto [key, value] : mMapTrCount.asKeyValueRange())
+    {
+        // qDebug() << key << value;
+    }
 }

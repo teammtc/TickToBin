@@ -1,5 +1,6 @@
 #include "CThDataReader.hpp"
 #include <QDebug>
+#include <QDateTime>
 
 CThDataReader::CThDataReader()
 {
@@ -45,7 +46,6 @@ void CThDataReader::slotPrepareFile(QString strFile)
 void CThDataReader::checkValidFile()
 {
     QString sReadLine, sTrText, sTrCode;
-    QByteArray tmpByteArr;
     while (true)
     {
         if (mTextStream.atEnd() == false)
@@ -59,9 +59,9 @@ void CThDataReader::checkValidFile()
                 sTrText = sReadLine.mid(mCOLON_POS + 1);
                 sTrCode = sTrText.left(mTR_CODE_LEN);
 
-                auto iterReqTrMap = mTR_CODE_SIZE.find(sTrCode);
+                auto iterReqTrMap = mapTrCode.find(sTrCode);
 
-                if (iterReqTrMap != mTR_CODE_SIZE.end())
+                if (iterReqTrMap != mapTrCode.end())
                 {
                     emit sigValidFile();
                     break;
@@ -89,30 +89,25 @@ void CThDataReader::processReading()
                 sTrText = sReadLine.mid(mCOLON_POS + 1);
                 sTrCode = sTrText.left(mTR_CODE_LEN);
 
-                auto iterReqTrMap = mTR_CODE_SIZE.find(sTrCode);
+                auto iterReqTrMap = mapTrCode.find(sTrCode);
 
                 // 버릴 수 없는 TR목록에 포함되면 처리
-                if (iterReqTrMap != mTR_CODE_SIZE.end())
+                if (iterReqTrMap != mapTrCode.end())
                 {
                     // 한글자리수 계산을 위해 ByteArr 사용
-            //         tmpByteArr = sTrText.toLocal8Bit();
+                    tmpByteArr = sTrText.toLocal8Bit();
 
-            //         if (tmpByteArr.length() + 1 == iterReqTrMap.value().mLength)
-            //         {
-            //             ui->teLog1->setText(sTrText);
-
-            //             // EpochTime 변환
-            //             qint64 iEpochTime = sReadLine.left(mCOLON_POS).toLongLong();
-            //             iEpochTime = iEpochTime / 1000;
-            //             QDateTime dDateTime = dDateTime.fromMSecsSinceEpoch(iEpochTime);
-            //             ui->leRcvTM->setText(dDateTime.toString("HH:mm:ss.zzz"));
-            //             break;
-            //         }
-            //         else
-            //         {
-            //             ui->teLog1->setText(sTrCode + " 정상수신실패");
-            //             break;
-            //         }
+                    // escape character까지 합한 값을 비교
+                    if (tmpByteArr.length() + 1 == iterReqTrMap.value().size)
+                    {
+                        // qDebug() << sTrCode;
+                        emit sigAnalyseData(sTrCode);
+                        break;
+                    }
+                    else
+                    {
+                        break;
+                    }
                 }
             }
         }
@@ -120,7 +115,7 @@ void CThDataReader::processReading()
         {
             if (mpFile->isOpen() == true)
             {
-                mpFile->reset();
+                mpFile->close();
             }
         }
     }
