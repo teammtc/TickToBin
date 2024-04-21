@@ -44,7 +44,7 @@ class CThDataReader : public QThread
     Q_OBJECT
 
 private:
-    std::unique_ptr<QFile> mpFile;
+    QFile mFile;
     QTextStream mTextStream;
     ThStatus mStatus = ThStatus::Init;
     ThStatus getStatus();

@@ -16,7 +16,6 @@ CDlgMain::CDlgMain(QWidget *parent)
 #endif
 
     mpThDataReader = std::make_unique<CThDataReader>();
-    mpFile = std::make_unique<QFile>();
 
     // CDlgMain의 sigPrepareFile이 호출되면 CThDataReader의 slotPrepareFile에서 받는다.
     QObject::connect(this, SIGNAL(sigPrepareFile(QString)), mpThDataReader.get(), SLOT(slotPrepareFile(QString)), Qt::QueuedConnection);

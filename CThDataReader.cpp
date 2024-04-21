@@ -4,7 +4,7 @@
 
 CThDataReader::CThDataReader()
 {
-    mpFile = std::make_unique<QFile>();
+
 }
 
 CThDataReader::~CThDataReader()
@@ -30,13 +30,13 @@ void CThDataReader::slotPrepareFile(QString strFile)
         return;
     }
 
-    mpFile->setFileName(strFile);
-    if(mpFile->open(QIODevice::ReadOnly | QIODevice::Text) == false)
+    mFile.setFileName(strFile);
+    if(mFile.open(QIODevice::ReadOnly | QIODevice::Text) == false)
     {
         qDebug() << "Failed to open " << strFile << " file";
         return;
     }
-    mTextStream.setDevice(mpFile.get());
+    mTextStream.setDevice(&mFile);
     mTextStream.setEncoding(QStringConverter::System);
 
     // 파일을 불러온 후, 제대로 된 시세파일인지 여부를 검사.
@@ -113,9 +113,9 @@ void CThDataReader::processReading()
         }
         else
         {
-            if (mpFile->isOpen() == true)
+            if (mFile.isOpen() == true)
             {
-                mpFile->close();
+                mFile.close();
             }
         }
     }
