@@ -24,7 +24,6 @@ public:
 private:
     Ui::CDlgMain *ui;
     std::unique_ptr<CThDataReader> mpThDataReader;
-    QMap<QString, int> mMapTrCount;
 
 signals:
     void sigPrepareFile(QString);

@@ -1,5 +1,6 @@
 #include "CDlgMain.hpp"
 #include "ui_CDlgMain.h"
+#include "TrInterface.hpp"
 
 CDlgMain::CDlgMain(QWidget *parent)
     : QMainWindow(parent)
@@ -67,20 +68,12 @@ void CDlgMain::slotValidFile()
 
 void CDlgMain::slotAnalyseData(QString trCode)
 {
-    // map에 해당 TR 코드가 있으면
-    if(mMapTrCount.contains(trCode))
-    {
-        ++mMapTrCount[trCode];
-    }
+    auto& data = mapTrCode[trCode];
+    data.occurrence += 1;
 
-    // 없으면 신규 추가
-    else
-    {
-        mMapTrCount.insert(trCode, 1);
-    }
 
-    for(auto [key, value] : mMapTrCount.asKeyValueRange())
+    for(auto [key, data] : mapTrCode.asKeyValueRange())
     {
-        // qDebug() << key << value;
+        qDebug() << key << data.occurrence;
     }
 }
