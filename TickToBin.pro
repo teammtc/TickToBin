@@ -22,8 +22,7 @@ SOURCES += \
 
 HEADERS += \
     CDlgMain.hpp \
-    CThDataReader.hpp \
-    TrInterface.hpp
+    CThDataReader.hpp
 
 FORMS += \
     CDlgMain.ui

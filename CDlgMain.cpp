@@ -1,6 +1,5 @@
 #include "CDlgMain.hpp"
 #include "ui_CDlgMain.h"
-#include "TrInterface.hpp"
 
 CDlgMain::CDlgMain(QWidget *parent)
     : QMainWindow(parent)
@@ -68,12 +67,5 @@ void CDlgMain::slotValidFile()
 
 void CDlgMain::slotAnalyseData(QString trCode)
 {
-    auto& data = mapTrCode[trCode];
-    data.occurrence += 1;
 
-
-    for(auto [key, data] : mapTrCode.asKeyValueRange())
-    {
-        qDebug() << key << data.occurrence;
-    }
 }
