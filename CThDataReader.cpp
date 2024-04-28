@@ -182,9 +182,19 @@ CThDataReader::CThDataReader()
         qDebug() << iter.key() << " " << iter.value().n2Length;
     }
     */
+
+    mpTimer = std::make_unique<QTimer>();
+    QObject::connect(mpTimer.get(), SIGNAL(timeout()), this, SLOT(slotPrtStatsCycle()));
+    // 1초 타이머
+    mpTimer->start(1000);
 }
 
 CThDataReader::~CThDataReader()
+{
+
+}
+
+void CThDataReader::slotPrtStatsCycle()
 {
 
 }
@@ -273,7 +283,6 @@ void CThDataReader::processReading()
                     // escape character까지 합한 값을 비교
                     if (tmpByteArr.length() + 1 == mReqTrMap[sTrCode].n2Length)
                     {
-                        // qDebug() << sTrCode;
                         emit sigAnalyseData(sTrCode);
                         break;
                     }
@@ -282,6 +291,10 @@ void CThDataReader::processReading()
                         break;
                     }
                 }
+            }
+            else
+            {
+                qDebug() << sReadLine;
             }
         }
         else

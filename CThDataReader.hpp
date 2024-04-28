@@ -5,6 +5,7 @@
 #include <QFile>
 #include <QTextStream>
 #include <QMap>
+#include <QTimer>
 
 enum class ThStatus
 {
@@ -33,6 +34,7 @@ private:
     constexpr static qsizetype mCOLON_POS  = 16;
     constexpr static qsizetype mTR_CODE_LEN = 5;
     void checkValidFile();
+    std::unique_ptr<QTimer> mpTimer;
 
 signals:
     void sigValidFile();
@@ -40,6 +42,7 @@ signals:
 
 private slots:
     void slotPrepareFile(QString);
+    void slotPrtStatsCycle();
 
 public:
     CThDataReader();
