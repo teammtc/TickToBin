@@ -1,5 +1,7 @@
 #include "CDlgMain.hpp"
 #include "ui_CDlgMain.h"
+#include <QDialog>
+#include <QMessageBox>
 
 CDlgMain::CDlgMain(QWidget *parent)
     : QMainWindow(parent)
@@ -25,6 +27,8 @@ CDlgMain::CDlgMain(QWidget *parent)
 
     // CThDataReader에서 sigAnalyseData를 내보내면 CDlgMain에서 slotAnalyseData를 통해 받는다.
     QObject::connect(mpThDataReader.get(), SIGNAL(sigAnalyseData(QString)), this, SLOT(slotAnalyseData(QString)), Qt::QueuedConnection);
+
+    QObject::connect(mpThDataReader.get(), SIGNAL(sigDisplayMessage(QString)), this, SLOT(slotDisplayMessage(QString)), Qt::QueuedConnection);
 }
 
 CDlgMain::~CDlgMain()
@@ -40,6 +44,12 @@ void CDlgMain::slotBtnOpenFile(void)
                                                      , tr("Open File")
                                                      , QDir::homePath()
                                                      , tr("Text files (*.txt)"));
+
+    if (sFileName.isEmpty() == true)
+    {
+        displayMessage("파일 로드에 실패했습니다.");
+        return;
+    }
 
     emit sigPrepareFile(sFileName);
 }
@@ -57,6 +67,18 @@ void CDlgMain::slotBtnStatsTR(void)
         qDebug() << "clicked btnStatsTR.";
         ui->btnStatsTR->setEnabled(false);
     }
+}
+
+void CDlgMain::slotDisplayMessage(QString msg)
+{
+    displayMessage(msg);
+}
+
+void CDlgMain::displayMessage(QString msg)
+{
+    QMessageBox msgBox;
+    msgBox.setText(msg);
+    msgBox.exec();
 }
 
 void CDlgMain::slotValidFile()

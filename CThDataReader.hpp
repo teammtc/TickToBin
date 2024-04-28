@@ -39,6 +39,7 @@ private:
 signals:
     void sigValidFile();
     void sigAnalyseData(QString);
+    void sigDisplayMessage(QString);
 
 private slots:
     void slotPrepareFile(QString);

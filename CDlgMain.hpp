@@ -24,6 +24,7 @@ public:
 private:
     Ui::CDlgMain *ui;
     std::unique_ptr<CThDataReader> mpThDataReader;
+    void displayMessage(QString);
 
 signals:
     void sigPrepareFile(QString);
@@ -34,6 +35,7 @@ private slots:
     void slotBtnStatsTR(void);
     void slotValidFile();
     void slotAnalyseData(QString);
+    void slotDisplayMessage(QString);
 
 };
 #endif // CDLGMAIN_HPP
