@@ -257,30 +257,33 @@ void CThDataReader::processReading()
         if (mTextStream.atEnd() == false)
         {
             sReadLine = mTextStream.readLine();
+            sTrText = sReadLine.mid(mCOLON_POS + 1);
+            sTrCode = sTrText.left(mTR_CODE_LEN);
+
+            // 버려도 되는 TR인 경우에는 스킵.
+            if(!mReqTrMap.contains(sTrCode))
+            {
+                continue;
+            }
 
             // epoch time이 마이크로 단위라 16자리
             // 따라서 읽은 Line이 16자리 이상이고 그다음 콜론(:)이 온다면 유효한 TR로 간주
             if (sReadLine.length() >= mCOLON_POS && sReadLine.at(mCOLON_POS) == ':')
             {
-                sTrText = sReadLine.mid(mCOLON_POS + 1);
-                sTrCode = sTrText.left(mTR_CODE_LEN);
+                // 한글자리수 계산을 위해 ByteArr 사용
+                tmpByteArr = sTrText.toLocal8Bit();
 
-                // 버릴 수 없는 TR목록에 포함되면 처리
-                if (mReqTrMap.contains(sTrCode))
+                // escape character까지 합한 값을 비교
+                if (tmpByteArr.length() + 1 == mReqTrMap[sTrCode].n2Length)
                 {
-                    // 한글자리수 계산을 위해 ByteArr 사용
-                    tmpByteArr = sTrText.toLocal8Bit();
-
-                    // escape character까지 합한 값을 비교
-                    if (tmpByteArr.length() + 1 == mReqTrMap[sTrCode].n2Length)
-                    {
-                        emit sigAnalyseData(sTrCode);
-                        break;
-                    }
-                    else
-                    {
-                        break;
-                    }
+                    mReqTrMap[sTrCode].n1Cnt += 1;
+                    qDebug() << "TR Code: " << sTrCode << ", Count: " << mReqTrMap[sTrCode].n1Cnt;
+                    emit sigAnalyseData(sTrCode);
+                    break;
+                }
+                else
+                {
+                    break;
                 }
             }
             else
