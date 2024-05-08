@@ -174,15 +174,6 @@ CThDataReader::CThDataReader()
         mReqTrMap.insert(elemVec.first, initTrInfo);
     }
 
-    //QMap데이터 확인
-    /*QMapIterator<QString, trInfo_st> iter(mReqTrMap);
-    while (iter.hasNext())
-    {
-        iter.next();
-        qDebug() << iter.key() << " " << iter.value().n2Length;
-    }
-    */
-
     mpTimer = std::make_unique<QTimer>();
     QObject::connect(mpTimer.get(), SIGNAL(timeout()), this, SLOT(slotPrtStatsCycle()));
     // 1초 타이머
@@ -295,6 +286,7 @@ void CThDataReader::processReading()
             else
             {
                 qDebug() << sReadLine;
+                continue;
             }
         }
         else
