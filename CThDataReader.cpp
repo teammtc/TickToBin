@@ -214,6 +214,11 @@ void CThDataReader::slotPrepareFile(QString strFile)
         qDebug() << "Failed to open " << strFile << " file";
         return;
     }
+
+    mFileSize = mFile.size();
+
+    qDebug() << "File size:" << mFileSize;
+
     mTextStream.setDevice(&mFile);
     mTextStream.setEncoding(QStringConverter::System);
 
@@ -260,6 +265,12 @@ void CThDataReader::processReading()
             sTrText = sReadLine.mid(mCOLON_POS + 1);
             sTrCode = sTrText.left(mTR_CODE_LEN);
 
+            // 개행문자의 길이를 더해줌.
+            mReadFileSize += sReadLine.toUtf8().length() + 1;
+
+            int percentage = static_cast<double>(mReadFileSize) / static_cast<double>(mFileSize) * 100;
+            emit sigDisplayPercentage(percentage);
+
             // 버려도 되는 TR인 경우에는 스킵.
             if(!mReqTrMap.contains(sTrCode))
             {
@@ -277,7 +288,6 @@ void CThDataReader::processReading()
                 if (tmpByteArr.length() + 1 == mReqTrMap[sTrCode].n2Length)
                 {
                     mReqTrMap[sTrCode].n1Cnt += 1;
-                    qDebug() << "TR Code: " << sTrCode << ", Count: " << mReqTrMap[sTrCode].n1Cnt;
                     emit sigAnalyseData(sTrCode);
                     break;
                 }
@@ -298,6 +308,8 @@ void CThDataReader::processReading()
             {
                 mFile.close();
             }
+
+            qDebug() << mReadFileSize;
         }
     }
 }

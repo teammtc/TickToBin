@@ -26,6 +26,8 @@ class CThDataReader : public QThread
 
 private:
     QFile mFile;
+    quint64 mFileSize = 0; // 전체 파일 사이즈를 담을 멤버변수
+    quint64 mReadFileSize = 0; // 특정 시점까지 읽어들인 파일의 크기를 담을 멤버변수
     QTextStream mTextStream;
     ThStatus mStatus = ThStatus::Init;
     ThStatus getStatus();
@@ -40,6 +42,7 @@ signals:
     void sigValidFile();
     void sigAnalyseData(QString);
     void sigDisplayMessage(QString);
+    void sigDisplayPercentage(int);
 
 private slots:
     void slotPrepareFile(QString);

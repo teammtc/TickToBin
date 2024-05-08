@@ -29,6 +29,8 @@ CDlgMain::CDlgMain(QWidget *parent)
     QObject::connect(mpThDataReader.get(), SIGNAL(sigAnalyseData(QString)), this, SLOT(slotAnalyseData(QString)), Qt::QueuedConnection);
 
     QObject::connect(mpThDataReader.get(), SIGNAL(sigDisplayMessage(QString)), this, SLOT(slotDisplayMessage(QString)), Qt::QueuedConnection);
+
+    QObject::connect(mpThDataReader.get(), SIGNAL(sigDisplayPercentage(int)), this, SLOT(slotDisplayPercentage(int)), Qt::QueuedConnection);
 }
 
 CDlgMain::~CDlgMain()
@@ -90,4 +92,9 @@ void CDlgMain::slotValidFile()
 void CDlgMain::slotAnalyseData(QString trCode)
 {
 
+}
+
+void CDlgMain::slotDisplayPercentage(int percentage)
+{
+    ui->pgsBar1->setValue(percentage);
 }
