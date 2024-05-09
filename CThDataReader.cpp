@@ -288,7 +288,16 @@ void CThDataReader::processReading()
                 if (tmpByteArr.length() + 1 == mReqTrMap[sTrCode].n2Length)
                 {
                     mReqTrMap[sTrCode].n1Cnt += 1;
-                    emit sigAnalyseData(sTrCode);
+                    QString strStat = "";
+                    for(auto [key, data] : mReqTrMap.asKeyValueRange())
+                    {
+                        if(data.n1Cnt > 0)
+                        {
+                            strStat += key + ": " + QString::number(data.n1Cnt) + "\n";
+                        }
+
+                    }
+                    emit sigAnalyseData(strStat);
                     break;
                 }
                 else

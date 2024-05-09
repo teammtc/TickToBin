@@ -89,9 +89,9 @@ void CDlgMain::slotValidFile()
     ui->btnStatsTR->setEnabled(true);
 }
 
-void CDlgMain::slotAnalyseData(QString trCode)
+void CDlgMain::slotAnalyseData(QString strStat)
 {
-
+    ui->teStats->setText(strStat);
 }
 
 void CDlgMain::slotDisplayPercentage(int percentage)
