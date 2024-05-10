@@ -37,6 +37,7 @@ private:
     constexpr static qsizetype mTR_CODE_LEN = 5;
     void checkValidFile();
     std::unique_ptr<QTimer> mpTimer;
+    QString mStrStat;
 
 signals:
     void sigValidFile();

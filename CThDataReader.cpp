@@ -187,7 +187,10 @@ CThDataReader::~CThDataReader()
 
 void CThDataReader::slotPrtStatsCycle()
 {
-
+    if(mStatus == ThStatus::Running)
+    {
+        emit sigAnalyseData(mStrStat);
+    }
 }
 
 ThStatus CThDataReader::getStatus()
@@ -297,7 +300,7 @@ void CThDataReader::processReading()
                         }
 
                     }
-                    emit sigAnalyseData(strStat);
+                    mStrStat = strStat;
                     break;
                 }
                 else
