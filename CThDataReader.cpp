@@ -1,6 +1,7 @@
 #include "CThDataReader.hpp"
 #include <QDebug>
 #include <QDateTime>
+#include <QTimeZone>
 
 CThDataReader::CThDataReader()
 {
@@ -292,7 +293,16 @@ void CThDataReader::processReading()
                 if (tmpByteArr.length() + 1 == mReqTrMap[sTrCode].n2Length)
                 {
                     mReqTrMap[sTrCode].n1Cnt += 1;
-                    QString strStat = "시작 시간: " + mStrStartTime + "\n" +
+                    QDateTime currentTime = QDateTime::currentDateTime();
+                    QString strCurrentTime = currentTime.toString("hh:mm:ss.zzz");
+                    QString strStartTime = mDtStarted.toString("hh:mm:ss.zzz");
+                    quint64 elapsedSecs = currentTime.toSecsSinceEpoch() - mDtStarted.toSecsSinceEpoch();
+                    QDateTime elapsed = QDateTime::fromSecsSinceEpoch(elapsedSecs).toLocalTime();
+                    QString strElapsed = elapsed.toString("hh:mm:ss.zzz");
+
+                    QString strStat = "시작 시각: " + strStartTime + "\n" +
+                                      "현재 시각: " + strCurrentTime + "\n" +
+                                      "분석진행중: " + strElapsed + "\n" +
                                       "진행률: " + mStrPercentage + "%\n";
 
                     for(auto [key, data] : mReqTrMap.asKeyValueRange())
@@ -331,8 +341,7 @@ void CThDataReader::processReading()
 
 void CThDataReader::run()
 {
-    QDateTime now = QDateTime::currentDateTime();
-    mStrStartTime = now.toString("hh:mm:ss.zzz");
+    mDtStarted = QDateTime::currentDateTime();
 
     while(true)
     {

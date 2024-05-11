@@ -6,6 +6,7 @@
 #include <QTextStream>
 #include <QMap>
 #include <QTimer>
+#include <QDateTime>
 
 enum class ThStatus
 {
@@ -38,7 +39,7 @@ private:
     void checkValidFile();
     std::unique_ptr<QTimer> mpTimer;
     QString mStrStat;
-    QString mStrStartTime;
+    QDateTime mDtStarted;
     QString mStrPercentage;
 
 signals:
