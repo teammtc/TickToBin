@@ -291,7 +291,8 @@ void CThDataReader::processReading()
                 if (tmpByteArr.length() + 1 == mReqTrMap[sTrCode].n2Length)
                 {
                     mReqTrMap[sTrCode].n1Cnt += 1;
-                    QString strStat = "";
+                    QString strStat = mStrStartTime + "\n";
+
                     for(auto [key, data] : mReqTrMap.asKeyValueRange())
                     {
                         if(data.n1Cnt > 0)
@@ -328,6 +329,9 @@ void CThDataReader::processReading()
 
 void CThDataReader::run()
 {
+    QDateTime now = QDateTime::currentDateTime();
+    mStrStartTime = now.toString("yyyy.MM.dd hh:mm:ss");
+
     while(true)
     {
         switch(mStatus)

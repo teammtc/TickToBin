@@ -38,6 +38,7 @@ private:
     void checkValidFile();
     std::unique_ptr<QTimer> mpTimer;
     QString mStrStat;
+    QString mStrStartTime;
 
 signals:
     void sigValidFile();
