@@ -39,6 +39,7 @@ private:
     std::unique_ptr<QTimer> mpTimer;
     QString mStrStat;
     QString mStrStartTime;
+    QString mStrPercentage;
 
 signals:
     void sigValidFile();

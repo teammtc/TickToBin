@@ -272,6 +272,7 @@ void CThDataReader::processReading()
             mReadFileSize += sReadLine.toUtf8().length() + 1;
 
             int percentage = static_cast<double>(mReadFileSize) / static_cast<double>(mFileSize) * 100;
+            mStrPercentage = QString::number(percentage);
             emit sigDisplayPercentage(percentage);
 
             // 버려도 되는 TR인 경우에는 스킵.
@@ -291,13 +292,14 @@ void CThDataReader::processReading()
                 if (tmpByteArr.length() + 1 == mReqTrMap[sTrCode].n2Length)
                 {
                     mReqTrMap[sTrCode].n1Cnt += 1;
-                    QString strStat = mStrStartTime + "\n";
+                    QString strStat = "시작 시간: " + mStrStartTime + "\n" +
+                                      "진행률: " + mStrPercentage + "%\n";
 
                     for(auto [key, data] : mReqTrMap.asKeyValueRange())
                     {
                         if(data.n1Cnt > 0)
                         {
-                            strStat += key + ": " + QString::number(data.n1Cnt) + "\n";
+                            strStat += key + ", 유효개수 = " + QLocale(QLocale::English).toString(data.n1Cnt) + "\n";
                         }
 
                     }
@@ -330,7 +332,7 @@ void CThDataReader::processReading()
 void CThDataReader::run()
 {
     QDateTime now = QDateTime::currentDateTime();
-    mStrStartTime = now.toString("yyyy.MM.dd hh:mm:ss");
+    mStrStartTime = now.toString("hh:mm:ss.zzz");
 
     while(true)
     {
