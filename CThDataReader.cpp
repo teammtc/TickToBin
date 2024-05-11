@@ -206,6 +206,8 @@ void CThDataReader::setStatus(ThStatus status)
 
 void CThDataReader::slotPrepareFile(QString strFile)
 {
+    mStrFilename = strFile;
+
     if (strFile.isEmpty() == true)
     {
         qDebug() << "Failed to get file name";
@@ -248,7 +250,7 @@ void CThDataReader::checkValidFile()
 
                 if (mReqTrMap.contains(sTrCode))
                 {
-                    emit sigValidFile();
+                    emit sigFileValidity(true);
                     break;
                 }
             }
@@ -342,6 +344,12 @@ void CThDataReader::processReading()
 void CThDataReader::run()
 {
     mDtStarted = QDateTime::currentDateTime();
+
+    if(mStrFilename == nullptr)
+    {
+        emit sigFileValidity(false);
+        return;
+    }
 
     while(true)
     {

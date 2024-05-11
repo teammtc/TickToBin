@@ -31,9 +31,8 @@ signals:
 
 private slots:
     void slotBtnOpenFile(void);
-    void slotBtnNextTR(void);
     void slotBtnStatsTR(void);
-    void slotValidFile();
+    void slotFileValidity(bool);
     void slotAnalyseData(QString);
     void slotDisplayMessage(QString);
     void slotDisplayPercentage(int);

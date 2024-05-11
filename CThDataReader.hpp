@@ -27,6 +27,7 @@ class CThDataReader : public QThread
 
 private:
     QFile mFile;
+    QString mStrFilename;
     quint64 mFileSize = 0; // 전체 파일 사이즈를 담을 멤버변수
     quint64 mReadFileSize = 0; // 특정 시점까지 읽어들인 파일의 크기를 담을 멤버변수
     QTextStream mTextStream;
@@ -43,7 +44,7 @@ private:
     QString mStrPercentage;
 
 signals:
-    void sigValidFile();
+    void sigFileValidity(bool);
     void sigAnalyseData(QString);
     void sigDisplayMessage(QString);
     void sigDisplayPercentage(int);

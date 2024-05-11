@@ -42,24 +42,6 @@
      </rect>
     </property>
    </widget>
-   <widget class="QPushButton" name="btnNextTR">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>38</y>
-      <width>84</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>10</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string>다음 TR 표시</string>
-    </property>
-   </widget>
    <widget class="QLineEdit" name="leRcvTM">
     <property name="geometry">
      <rect>
@@ -159,22 +141,6 @@
     <hint type="destinationlabel">
      <x>104</x>
      <y>33</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>btnNextTR</sender>
-   <signal>clicked()</signal>
-   <receiver>CDlgMain</receiver>
-   <slot>slotBtnNextTR()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>87</x>
-     <y>65</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>106</x>
-     <y>65</y>
     </hint>
    </hints>
   </connection>

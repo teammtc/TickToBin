@@ -23,7 +23,7 @@ CDlgMain::CDlgMain(QWidget *parent)
     QObject::connect(this, SIGNAL(sigPrepareFile(QString)), mpThDataReader.get(), SLOT(slotPrepareFile(QString)), Qt::QueuedConnection);
 
     // CThDataReader에서 sigValidFile을 내보내면 CDlgMain에서 slotValidFile을 통해 받는다.
-    QObject::connect(mpThDataReader.get(), SIGNAL(sigValidFile()), this, SLOT(slotValidFile()), Qt::QueuedConnection);
+    QObject::connect(mpThDataReader.get(), SIGNAL(sigFileValidity(bool)), this, SLOT(slotFileValidity(bool)), Qt::QueuedConnection);
 
     // CThDataReader에서 sigAnalyseData를 내보내면 CDlgMain에서 slotAnalyseData를 통해 받는다.
     QObject::connect(mpThDataReader.get(), SIGNAL(sigAnalyseData(QString)), this, SLOT(slotAnalyseData(QString)), Qt::QueuedConnection);
@@ -56,16 +56,12 @@ void CDlgMain::slotBtnOpenFile(void)
     emit sigPrepareFile(sFileName);
 }
 
-void CDlgMain::slotBtnNextTR(void)
-{
-    mpThDataReader->start();
-}
-
 void CDlgMain::slotBtnStatsTR(void)
 {
     // 버튼이 활성화 된 상태인지 한번 더 확인
     if(ui->btnStatsTR->isEnabled())
     {
+        mpThDataReader->start();
         qDebug() << "clicked btnStatsTR.";
         ui->btnStatsTR->setEnabled(false);
     }
@@ -83,8 +79,14 @@ void CDlgMain::displayMessage(QString msg)
     msgBox.exec();
 }
 
-void CDlgMain::slotValidFile()
+void CDlgMain::slotFileValidity(bool valid)
 {
+    if(!valid)
+    {
+        displayMessage("파일이 유효하지 않습니다.");
+        return;
+    }
+
     qDebug() << "valid file.";
     ui->btnStatsTR->setEnabled(true);
 }
