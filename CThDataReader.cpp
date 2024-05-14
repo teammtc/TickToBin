@@ -2,6 +2,7 @@
 #include <QDebug>
 #include <QDateTime>
 #include <QTimeZone>
+#include <algorithm>
 
 CThDataReader::CThDataReader()
 {
@@ -190,6 +191,34 @@ void CThDataReader::slotPrtStatsCycle()
 {
     if(mStatus == ThStatus::Running)
     {
+        QString strStat = "시작 시각: " + mStrStartTime + "\n" +
+                          "현재 시각: " + mStrCurrentTime + "\n" +
+                          "분석진행중: " + mStrElapsedTime + "\n" +
+                          "TR 주문 시각: " + mStrTRTime + "\n" +
+                          "진행률: " + mStrPercentage + "%\n";
+
+        // qmap은 기본적으로 키로 정렬이 되어 있다.
+        // 그렇기 때문에 TR 카운트 순으로 정렬한 값을 출력시키기 위해서는 qmap을 qvector로 변환해 주는 작업이 먼저 필요하다.
+        QVector<QPair<QString, trInfo_st>> vec;
+
+        for(auto&& k : mReqTrMap.keys())
+        {
+            vec.append(QPair<QString, trInfo_st>(k, mReqTrMap[k]));
+        }
+
+        std::sort(vec.begin(), vec.end(), [](QPair<QString, trInfo_st>& first, QPair<QString, trInfo_st>& second)
+        {
+            return first.second.n1Cnt > second.second.n1Cnt;
+        });
+
+        for(auto&& v : vec)
+        {
+            if(v.second.n1Cnt > 0)
+            {
+                strStat += v.first + ", 유효개수 = " + QLocale(QLocale::English).toString(v.second.n1Cnt) + "\n";
+            }
+        }
+        mStrStat = strStat;
         emit sigAnalyseData(mStrStat);
     }
 }
@@ -305,30 +334,20 @@ void CThDataReader::processReading()
                     tout << timestr_sec << '.' << std::setfill('0') << std::setw(6) << fraction_sec ;
                     std::string timestr_micro = tout.str();
                     QString strTRTime = QString::fromStdString(timestr_micro);
+                    mStrTRTime = strTRTime;
 
                     mReqTrMap[sTrCode].n1Cnt += 1;
                     QDateTime currentTime = QDateTime::currentDateTime();
                     QString strCurrentTime = currentTime.toString("hh:mm:ss.zzz");
+                    mStrCurrentTime = strCurrentTime;
+
                     QString strStartTime = mDtStarted.toString("hh:mm:ss.zzz");
+                    mStrStartTime = strStartTime;
+
                     quint64 elapsedSecs = currentTime.toSecsSinceEpoch() - mDtStarted.toSecsSinceEpoch();
                     QDateTime elapsed = QDateTime::fromSecsSinceEpoch(elapsedSecs).toLocalTime();
                     QString strElapsed = elapsed.toString("hh:mm:ss.zzz");
-
-                    QString strStat = "시작 시각: " + strStartTime + "\n" +
-                                      "현재 시각: " + strCurrentTime + "\n" +
-                                      "분석진행중: " + strElapsed + "\n" +
-                                      "TR 주문 시각: " + strTRTime + "\n" +
-                                      "진행률: " + mStrPercentage + "%\n";
-
-                    for(auto [key, data] : mReqTrMap.asKeyValueRange())
-                    {
-                        if(data.n1Cnt > 0)
-                        {
-                            strStat += key + ", 유효개수 = " + QLocale(QLocale::English).toString(data.n1Cnt) + "\n";
-                        }
-
-                    }
-                    mStrStat = strStat;
+                    mStrElapsedTime = strElapsed;
                     break;
                 }
                 else

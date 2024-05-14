@@ -28,6 +28,7 @@ class CThDataReader : public QThread
 private:
     QFile mFile;
     QString mStrFilename;
+    QString mStrStat;
     quint64 mFileSize = 0; // 전체 파일 사이즈를 담을 멤버변수
     quint64 mReadFileSize = 0; // 특정 시점까지 읽어들인 파일의 크기를 담을 멤버변수
     QTextStream mTextStream;
@@ -39,9 +40,12 @@ private:
     constexpr static qsizetype mTR_CODE_LEN = 5;
     void checkValidFile();
     std::unique_ptr<QTimer> mpTimer;
-    QString mStrStat;
     QDateTime mDtStarted;
-    QString mStrPercentage;
+    QString mStrStartTime; // 시작 시각
+    QString mStrCurrentTime; // 현재 시각
+    QString mStrElapsedTime; // 분석진행중 (경과 시각)
+    QString mStrTRTime; // TR 주문 시각
+    QString mStrPercentage; // 진행률
 
 signals:
     void sigFileValidity(bool);
