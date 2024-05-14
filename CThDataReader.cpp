@@ -294,6 +294,18 @@ void CThDataReader::processReading()
                 // escape character까지 합한 값을 비교
                 if (tmpByteArr.length() + 1 == mReqTrMap[sTrCode].n2Length)
                 {
+                    // TR 주문 시각은 16자리의 마이크로초다.
+                    long trTime = sReadLine.left(mCOLON_POS).toLong();
+                    int fraction_sec = trTime % 1000000;
+                    time_t seconds = trTime / 1000000;
+
+                    char timestr_sec[] = "YYYY-MM-DD hh:mm:ss.ssssss";
+                    std::strftime(timestr_sec, sizeof(timestr_sec) - 1, "%F %T", std::localtime(&seconds));
+                    std::ostringstream tout;
+                    tout << timestr_sec << '.' << std::setfill('0') << std::setw(6) << fraction_sec ;
+                    std::string timestr_micro = tout.str();
+                    QString strTRTime = QString::fromStdString(timestr_micro);
+
                     mReqTrMap[sTrCode].n1Cnt += 1;
                     QDateTime currentTime = QDateTime::currentDateTime();
                     QString strCurrentTime = currentTime.toString("hh:mm:ss.zzz");
@@ -305,6 +317,7 @@ void CThDataReader::processReading()
                     QString strStat = "시작 시각: " + strStartTime + "\n" +
                                       "현재 시각: " + strCurrentTime + "\n" +
                                       "분석진행중: " + strElapsed + "\n" +
+                                      "TR 주문 시각: " + strTRTime + "\n" +
                                       "진행률: " + mStrPercentage + "%\n";
 
                     for(auto [key, data] : mReqTrMap.asKeyValueRange())
