@@ -283,6 +283,10 @@ void CThDataReader::checkValidFile()
                     break;
                 }
             }
+        } else {
+            emit sigFileValidity(false);
+            setStatus(ThStatus::Stopped);
+            break;
         }
     }
 }
@@ -336,6 +340,8 @@ void CThDataReader::processReading()
                     QString strTRTime = QString::fromStdString(timestr_micro);
                     mStrTRTime = strTRTime;
 
+                    QString displayTRTime = strTRTime.split(' ')[1];
+
                     mReqTrMap[sTrCode].n1Cnt += 1;
                     QDateTime currentTime = QDateTime::currentDateTime();
                     QString strCurrentTime = currentTime.toString("hh:mm:ss.zzz");
@@ -348,6 +354,8 @@ void CThDataReader::processReading()
                     QDateTime elapsed = QDateTime::fromSecsSinceEpoch(elapsedSecs).toLocalTime();
                     QString strElapsed = elapsed.toString("hh:mm:ss.zzz");
                     mStrElapsedTime = strElapsed;
+
+                    emit sigDisplayTRTime(displayTRTime);
                     break;
                 }
                 else

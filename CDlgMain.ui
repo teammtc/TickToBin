@@ -45,9 +45,9 @@
    <widget class="QLineEdit" name="leRcvTM">
     <property name="geometry">
      <rect>
-      <x>150</x>
+      <x>120</x>
       <y>32</y>
-      <width>101</width>
+      <width>131</width>
       <height>20</height>
      </rect>
     </property>

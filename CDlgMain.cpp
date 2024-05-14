@@ -32,6 +32,7 @@ CDlgMain::CDlgMain(QWidget *parent)
 
     QObject::connect(mpThDataReader.get(), SIGNAL(sigDisplayPercentage(int)), this, SLOT(slotDisplayPercentage(int)), Qt::QueuedConnection);
     QObject::connect(mpThDataReader.get(), SIGNAL(sigAnalysisDone()), this, SLOT(slotAnalysisDone()), Qt::QueuedConnection);
+    QObject::connect(mpThDataReader.get(), SIGNAL(sigDisplayTRTime(QString)), this, SLOT(slotDisplayTRTime(QString)), Qt::QueuedConnection);
 }
 
 CDlgMain::~CDlgMain()
@@ -85,10 +86,10 @@ void CDlgMain::slotFileValidity(bool valid)
     if(!valid)
     {
         displayMessage("파일이 유효하지 않습니다.");
+        ui->btnStatsTR->setEnabled(false);
         return;
     }
 
-    qDebug() << "valid file.";
     ui->btnStatsTR->setEnabled(true);
 }
 
@@ -106,4 +107,9 @@ void CDlgMain::slotAnalysisDone()
 {
     displayMessage("데이터 분석이 끝났습니다.");
     ui->btnStatsTR->setEnabled(false);
+}
+
+void CDlgMain::slotDisplayTRTime(QString trTime)
+{
+    ui->leRcvTM->setText(trTime);
 }
