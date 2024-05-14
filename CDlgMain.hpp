@@ -36,6 +36,6 @@ private slots:
     void slotAnalyseData(QString);
     void slotDisplayMessage(QString);
     void slotDisplayPercentage(int);
-
+    void slotAnalysisDone();
 };
 #endif // CDLGMAIN_HPP

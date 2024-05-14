@@ -367,8 +367,10 @@ void CThDataReader::processReading()
             {
                 mFile.close();
             }
-
-            qDebug() << mReadFileSize;
+            setStatus(ThStatus::Stopped);
+            emit sigAnalysisDone();
+            emit sigDisplayPercentage(100);
+            return;
         }
     }
 }

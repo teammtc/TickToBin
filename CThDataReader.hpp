@@ -52,6 +52,7 @@ signals:
     void sigAnalyseData(QString);
     void sigDisplayMessage(QString);
     void sigDisplayPercentage(int);
+    void sigAnalysisDone();
 
 private slots:
     void slotPrepareFile(QString);

@@ -31,6 +31,7 @@ CDlgMain::CDlgMain(QWidget *parent)
     QObject::connect(mpThDataReader.get(), SIGNAL(sigDisplayMessage(QString)), this, SLOT(slotDisplayMessage(QString)), Qt::QueuedConnection);
 
     QObject::connect(mpThDataReader.get(), SIGNAL(sigDisplayPercentage(int)), this, SLOT(slotDisplayPercentage(int)), Qt::QueuedConnection);
+    QObject::connect(mpThDataReader.get(), SIGNAL(sigAnalysisDone()), this, SLOT(slotAnalysisDone()), Qt::QueuedConnection);
 }
 
 CDlgMain::~CDlgMain()
@@ -99,4 +100,10 @@ void CDlgMain::slotAnalyseData(QString strStat)
 void CDlgMain::slotDisplayPercentage(int percentage)
 {
     ui->pgsBar1->setValue(percentage);
+}
+
+void CDlgMain::slotAnalysisDone()
+{
+    displayMessage("데이터 분석이 끝났습니다.");
+    ui->btnStatsTR->setEnabled(false);
 }
