@@ -178,6 +178,7 @@ CThDataReader::CThDataReader()
 
     mpTimer = std::make_unique<QTimer>();
     QObject::connect(mpTimer.get(), SIGNAL(timeout()), this, SLOT(slotPrtStatsCycle()));
+    QObject::connect(this, SIGNAL(sigPrtStatsCycle()), this, SLOT(slotPrtStatsCycle()));
     // 1초 타이머
     mpTimer->start(1000);
 }
@@ -374,6 +375,7 @@ void CThDataReader::processReading()
                 mFile.close();
             }
             setStatus(ThStatus::Stopped);
+            emit sigPrtStatsCycle();
             emit sigAnalysisDone();
             emit sigDisplayPercentage(100);
             return;

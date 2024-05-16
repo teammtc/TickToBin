@@ -56,6 +56,7 @@ signals:
     void sigDisplayPercentage(int);
     void sigAnalysisDone();
     void sigDisplayTRTime(QString);
+    void sigPrtStatsCycle(void);
 
 private slots:
     void slotPrepareFile(QString);
