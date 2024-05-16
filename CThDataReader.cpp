@@ -195,7 +195,8 @@ void CThDataReader::slotPrtStatsCycle()
                           "현재 시각: " + mStrCurrentTime + "\n" +
                           "분석진행중: " + mStrElapsedTime + "\n" +
                           "TR 주문 시각: " + mStrTRTime + "\n" +
-                          "진행률: " + mStrPercentage + "%\n";
+                          "진행률: " + mStrPercentage + "%\n" +
+                          "전체 TR 개수: " + QLocale(QLocale::English).toString(mTotalTrCount) + "\n";
 
         // qmap은 기본적으로 키로 정렬이 되어 있다.
         // 그렇기 때문에 TR 카운트 순으로 정렬한 값을 출력시키기 위해서는 qmap을 qvector로 변환해 주는 작업이 먼저 필요하다.
@@ -343,16 +344,13 @@ void CThDataReader::processReading()
                     QString displayTRTime = strTRTime.split(' ')[1];
 
                     mReqTrMap[sTrCode].n1Cnt += 1;
-                    QDateTime currentTime = QDateTime::currentDateTime();
-                    QString strCurrentTime = currentTime.toString("hh:mm:ss.zzz");
+                    mTotalTrCount += 1;
+                    QDateTime currentTime = QDateTime::currentDateTime().toTimeZone(QTimeZone::systemTimeZone());
+                    QString strCurrentTime = currentTime.toString("HH:mm:ss.zzz");
                     mStrCurrentTime = strCurrentTime;
 
-                    QString strStartTime = mDtStarted.toString("hh:mm:ss.zzz");
-                    mStrStartTime = strStartTime;
-
-                    quint64 elapsedSecs = currentTime.toSecsSinceEpoch() - mDtStarted.toSecsSinceEpoch();
-                    QDateTime elapsed = QDateTime::fromSecsSinceEpoch(elapsedSecs).toLocalTime();
-                    QString strElapsed = elapsed.toString("hh:mm:ss.zzz");
+                    quint64 elapsedMs = mDtStarted.msecsTo(currentTime);
+                    QString strElapsed = formatElapsedTime(elapsedMs);
                     mStrElapsedTime = strElapsed;
 
                     emit sigDisplayTRTime(displayTRTime);
@@ -383,10 +381,22 @@ void CThDataReader::processReading()
     }
 }
 
+// 경과 시간(msecs) 포맷
+QString CThDataReader::formatElapsedTime(quint64 xMsec)
+{
+    int8_t  iHour = xMsec / (1000 * 3600);
+    int8_t  iMin  = (xMsec % (1000 * 3600)) / (1000 * 60);
+    int8_t  iSec  = ((xMsec % (1000 * 3600)) % (1000 * 60)) / 1000;
+    int16_t iMsec = xMsec % 1000;
+
+    return tr("%1:%2:%3:%4").arg(iHour, 2, 10, QLatin1Char('0'))
+        .arg(iMin , 2, 10, QLatin1Char('0'))
+        .arg(iSec , 2, 10, QLatin1Char('0'))
+        .arg(iMsec, 3, 10, QLatin1Char('0'));
+}
+
 void CThDataReader::run()
 {
-    mDtStarted = QDateTime::currentDateTime();
-
     if(mStrFilename == nullptr)
     {
         emit sigFileValidity(false);
@@ -398,6 +408,8 @@ void CThDataReader::run()
         switch(mStatus)
         {
         case ThStatus::Init:
+            mDtStarted = QDateTime::currentDateTime();
+            mStrStartTime = mDtStarted.toString("HH:mm:ss.zzz");
             qDebug() << "Starting the data reader..";
             setStatus(ThStatus::Running);
             break;
