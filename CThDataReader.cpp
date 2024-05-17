@@ -287,7 +287,6 @@ void CThDataReader::checkValidFile()
             }
         } else {
             emit sigFileValidity(false);
-            setStatus(ThStatus::Stopped);
             break;
         }
     }
