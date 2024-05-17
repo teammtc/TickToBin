@@ -413,7 +413,6 @@ void CThDataReader::run()
             break;
 
         case ThStatus::Stopped:
-            qDebug() << "Thread stops.";
             break;
         }
     }
