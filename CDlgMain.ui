@@ -45,9 +45,9 @@
    <widget class="QLineEdit" name="leRcvTM">
     <property name="geometry">
      <rect>
-      <x>120</x>
-      <y>32</y>
-      <width>131</width>
+      <x>20</x>
+      <y>90</y>
+      <width>211</width>
       <height>20</height>
      </rect>
     </property>
@@ -55,10 +55,10 @@
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>154</x>
-      <y>12</y>
-      <width>94</width>
-      <height>14</height>
+      <x>20</x>
+      <y>70</y>
+      <width>111</width>
+      <height>16</height>
      </rect>
     </property>
     <property name="font">
@@ -67,7 +67,7 @@
      </font>
     </property>
     <property name="text">
-     <string>시세 수신 시각</string>
+     <string>최신 시세 수신 시각</string>
     </property>
    </widget>
    <widget class="QTextEdit" name="teStats">
@@ -100,7 +100,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>70</y>
+      <y>40</y>
       <width>84</width>
       <height>20</height>
      </rect>

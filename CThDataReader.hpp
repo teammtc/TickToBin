@@ -44,10 +44,10 @@ private:
     QString mStrStartTime; // 시작 시각
     QString mStrCurrentTime; // 현재 시각
     QString mStrElapsedTime; // 분석진행중 (경과 시각)
-    QString mStrTRTime; // TR 주문 시각
     QString mStrPercentage; // 진행률
     int mTotalTrCount = 0; // 전체 TR 합산 수
     QString formatElapsedTime(quint64);
+    quint64 iTrTime;
 
 signals:
     void sigFileValidity(bool);
