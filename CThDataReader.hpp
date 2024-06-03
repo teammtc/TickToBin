@@ -48,6 +48,7 @@ private:
     int mTotalTrCount = 0; // 전체 TR 합산 수
     QString formatElapsedTime(quint64);
     quint64 iTrTime;
+    void printRenewStat(void);
 
 signals:
     void sigFileValidity(bool);
@@ -56,7 +57,6 @@ signals:
     void sigDisplayPercentage(int);
     void sigAnalysisDone();
     void sigDisplayTRTime(QString);
-    void sigPrtStatsCycle(void);
 
 private slots:
     void slotPrepareFile(QString);

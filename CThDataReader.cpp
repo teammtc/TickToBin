@@ -178,7 +178,7 @@ CThDataReader::CThDataReader()
 
     mpTimer = std::make_unique<QTimer>();
     QObject::connect(mpTimer.get(), SIGNAL(timeout()), this, SLOT(slotPrtStatsCycle()));
-    QObject::connect(this, SIGNAL(sigPrtStatsCycle()), this, SLOT(slotPrtStatsCycle()));
+
     // 1초 타이머
     mpTimer->start(1000);
 }
@@ -192,49 +192,54 @@ void CThDataReader::slotPrtStatsCycle()
 {
     if(mStatus == ThStatus::Running)
     {
-        int fraction_sec = iTrTime % 1000000;
-        time_t seconds = iTrTime / 1000000;
-
-        char timestr_sec[] = "YYYY-MM-DD hh:mm:ss.ssssss";
-        std::strftime(timestr_sec, sizeof(timestr_sec) - 1, "%F %T", std::localtime(&seconds));
-        std::ostringstream tout;
-        tout << timestr_sec << '.' << std::setfill('0') << std::setw(6) << fraction_sec ;
-        std::string timestr_micro = tout.str();
-        QString strTRTime = QString::fromStdString(timestr_micro);
-
-        emit sigDisplayTRTime(strTRTime);
-
-        QString strStat = "시작 시각: " + mStrStartTime + "\n" +
-                          "현재 시각: " + mStrCurrentTime + "\n" +
-                          "분석진행중: " + mStrElapsedTime + "\n" +
-                          "TR 주문 시각: " + strTRTime + "\n" +
-                          "진행률: " + mStrPercentage + "%\n" +
-                          "전체 TR 개수: " + QLocale(QLocale::English).toString(mTotalTrCount) + "\n";
-
-        // qmap은 기본적으로 키로 정렬이 되어 있다.
-        // 그렇기 때문에 TR 카운트 순으로 정렬한 값을 출력시키기 위해서는 qmap을 qvector로 변환해 주는 작업이 먼저 필요하다.
-        QVector<QPair<QString, trInfo_st>> vec;
-
-        for(auto&& k : mReqTrMap.keys())
-        {
-            vec.append(QPair<QString, trInfo_st>(k, mReqTrMap[k]));
-        }
-
-        std::sort(vec.begin(), vec.end(), [](QPair<QString, trInfo_st>& first, QPair<QString, trInfo_st>& second)
-        {
-            return first.second.n1Cnt > second.second.n1Cnt;
-        });
-
-        for(auto&& v : vec)
-        {
-            if(v.second.n1Cnt > 0)
-            {
-                strStat += v.first + ", 유효개수 = " + QLocale(QLocale::English).toString(v.second.n1Cnt) + "\n";
-            }
-        }
-        mStrStat = strStat;
-        emit sigAnalyseData(mStrStat);
+        printRenewStat();
     }
+}
+
+void CThDataReader::printRenewStat()
+{
+    int fraction_sec = iTrTime % 1000000;
+    time_t seconds = iTrTime / 1000000;
+
+    char timestr_sec[] = "YYYY-MM-DD hh:mm:ss.ssssss";
+    std::strftime(timestr_sec, sizeof(timestr_sec) - 1, "%F %T", std::localtime(&seconds));
+    std::ostringstream tout;
+    tout << timestr_sec << '.' << std::setfill('0') << std::setw(6) << fraction_sec ;
+    std::string timestr_micro = tout.str();
+    QString strTRTime = QString::fromStdString(timestr_micro);
+
+    emit sigDisplayTRTime(strTRTime);
+
+    QString strStat = "시작 시각: " + mStrStartTime + "\n" +
+                      "현재 시각: " + mStrCurrentTime + "\n" +
+                      "분석진행중: " + mStrElapsedTime + "\n" +
+                      "TR 주문 시각: " + strTRTime + "\n" +
+                      "진행률: " + mStrPercentage + "%\n" +
+                      "전체 TR 개수: " + QLocale(QLocale::English).toString(mTotalTrCount) + "\n";
+
+    // qmap은 기본적으로 키로 정렬이 되어 있다.
+    // 그렇기 때문에 TR 카운트 순으로 정렬한 값을 출력시키기 위해서는 qmap을 qvector로 변환해 주는 작업이 먼저 필요하다.
+    QVector<QPair<QString, trInfo_st>> vec;
+
+    for(auto&& k : mReqTrMap.keys())
+    {
+        vec.append(QPair<QString, trInfo_st>(k, mReqTrMap[k]));
+    }
+
+    std::sort(vec.begin(), vec.end(), [](QPair<QString, trInfo_st>& first, QPair<QString, trInfo_st>& second)
+              {
+                  return first.second.n1Cnt > second.second.n1Cnt;
+              });
+
+    for(auto&& v : vec)
+    {
+        if(v.second.n1Cnt > 0)
+        {
+            strStat += v.first + ", 유효개수 = " + QLocale(QLocale::English).toString(v.second.n1Cnt) + "\n";
+        }
+    }
+    mStrStat = strStat;
+    emit sigAnalyseData(mStrStat);
 }
 
 ThStatus CThDataReader::getStatus()
@@ -278,30 +283,27 @@ void CThDataReader::slotPrepareFile(QString strFile)
 void CThDataReader::checkValidFile()
 {
     QString sReadLine, sTrText, sTrCode;
-    while (true)
+    bool isValidFile = false;
+
+    while (!mTextStream.atEnd())
     {
-        if (mTextStream.atEnd() == false)
+        sReadLine = mTextStream.readLine();
+
+        // epoch time이 마이크로 단위라 16자리
+        // 따라서 읽은 Line이 16자리 이상이고 그다음 콜론(:)이 온다면 유효한 TR로 간주
+        if (sReadLine.length() >= mCOLON_POS && sReadLine.at(mCOLON_POS) == ':')
         {
-            sReadLine = mTextStream.readLine();
+            sTrText = sReadLine.mid(mCOLON_POS + 1);
+            sTrCode = sTrText.left(mTR_CODE_LEN);
 
-            // epoch time이 마이크로 단위라 16자리
-            // 따라서 읽은 Line이 16자리 이상이고 그다음 콜론(:)이 온다면 유효한 TR로 간주
-            if (sReadLine.length() >= mCOLON_POS && sReadLine.at(mCOLON_POS) == ':')
+            if (mReqTrMap.contains(sTrCode))
             {
-                sTrText = sReadLine.mid(mCOLON_POS + 1);
-                sTrCode = sTrText.left(mTR_CODE_LEN);
-
-                if (mReqTrMap.contains(sTrCode))
-                {
-                    emit sigFileValidity(true);
-                    break;
-                }
+                isValidFile = true;
+                break;
             }
-        } else {
-            emit sigFileValidity(false);
-            break;
         }
     }
+    emit sigFileValidity(isValidFile);
 }
 
 void CThDataReader::processReading()
@@ -309,70 +311,67 @@ void CThDataReader::processReading()
     QString sReadLine, sTrText, sTrCode;
     QByteArray tmpByteArr;
 
-    while (true)
+    while (!mTextStream.atEnd())
     {
-        if (mTextStream.atEnd() == false)
+        sReadLine = mTextStream.readLine();
+        sTrText = sReadLine.mid(mCOLON_POS + 1);
+        sTrCode = sTrText.left(mTR_CODE_LEN);
+
+        // 개행문자의 길이를 더해줌.
+        mReadFileSize += sReadLine.toUtf8().length() + 1;
+
+        int percentage = static_cast<double>(mReadFileSize) / static_cast<double>(mFileSize) * 100;
+        mStrPercentage = QString::number(percentage);
+        emit sigDisplayPercentage(percentage);
+
+        // 버려도 되는 TR인 경우에는 스킵.
+        if(!mReqTrMap.contains(sTrCode))
         {
-            sReadLine = mTextStream.readLine();
-            sTrText = sReadLine.mid(mCOLON_POS + 1);
-            sTrCode = sTrText.left(mTR_CODE_LEN);
+            continue;
+        }
 
-            // 개행문자의 길이를 더해줌.
-            mReadFileSize += sReadLine.toUtf8().length() + 1;
+        // epoch time이 마이크로 단위라 16자리
+        // 따라서 읽은 Line이 16자리 이상이고 그다음 콜론(:)이 온다면 유효한 TR로 간주
+        if (sReadLine.length() >= mCOLON_POS && sReadLine.at(mCOLON_POS) == ':')
+        {
+            // 한글자리수 계산을 위해 ByteArr 사용
+            tmpByteArr = sTrText.toLocal8Bit();
 
-            int percentage = static_cast<double>(mReadFileSize) / static_cast<double>(mFileSize) * 100;
-            mStrPercentage = QString::number(percentage);
-            emit sigDisplayPercentage(percentage);
-
-            // 버려도 되는 TR인 경우에는 스킵.
-            if(!mReqTrMap.contains(sTrCode))
+            // escape character까지 합한 값을 비교
+            if (tmpByteArr.length() + 1 == mReqTrMap[sTrCode].n2Length)
             {
-                continue;
-            }
+                // TR 주문 시각은 16자리의 마이크로초다.
+                iTrTime = sReadLine.left(mCOLON_POS).toLong();
 
-            // epoch time이 마이크로 단위라 16자리
-            // 따라서 읽은 Line이 16자리 이상이고 그다음 콜론(:)이 온다면 유효한 TR로 간주
-            if (sReadLine.length() >= mCOLON_POS && sReadLine.at(mCOLON_POS) == ':')
-            {
-                // 한글자리수 계산을 위해 ByteArr 사용
-                tmpByteArr = sTrText.toLocal8Bit();
+                mReqTrMap[sTrCode].n1Cnt += 1;
+                mTotalTrCount += 1;
+                QDateTime currentTime = QDateTime::currentDateTime().toTimeZone(QTimeZone::systemTimeZone());
+                QString strCurrentTime = currentTime.toString("HH:mm:ss.zzz");
+                mStrCurrentTime = strCurrentTime;
 
-                // escape character까지 합한 값을 비교
-                if (tmpByteArr.length() + 1 == mReqTrMap[sTrCode].n2Length)
-                {
-                    // TR 주문 시각은 16자리의 마이크로초다.
-                    iTrTime = sReadLine.left(mCOLON_POS).toLong();
-
-                    mReqTrMap[sTrCode].n1Cnt += 1;
-                    mTotalTrCount += 1;
-                    QDateTime currentTime = QDateTime::currentDateTime().toTimeZone(QTimeZone::systemTimeZone());
-                    QString strCurrentTime = currentTime.toString("HH:mm:ss.zzz");
-                    mStrCurrentTime = strCurrentTime;
-
-                    quint64 elapsedMs = mDtStarted.msecsTo(currentTime);
-                    QString strElapsed = formatElapsedTime(elapsedMs);
-                    mStrElapsedTime = strElapsed;
-                }
-            }
-            else
-            {
-                qDebug() << sReadLine;
-                continue;
+                quint64 elapsedMs = mDtStarted.msecsTo(currentTime);
+                QString strElapsed = formatElapsedTime(elapsedMs);
+                mStrElapsedTime = strElapsed;
             }
         }
         else
         {
-            if (mFile.isOpen() == true)
-            {
-                mFile.close();
-            }
-            emit sigPrtStatsCycle();
-            emit sigAnalysisDone();
-            emit sigDisplayPercentage(100);
-            setStatus(ThStatus::Stopped);
-            return;
+            qDebug() << sReadLine;
+            continue;
         }
     }
+
+    printRenewStat();
+    setStatus(ThStatus::Stopped);
+
+    qDebug() << "파일을 끝까지 다 읽었습니다.";
+
+    if (mFile.isOpen() == true)
+    {
+        mFile.close();
+    }
+
+    emit sigAnalysisDone();
 }
 
 // 경과 시간(msecs) 포맷

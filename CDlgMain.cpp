@@ -29,10 +29,9 @@ CDlgMain::CDlgMain(QWidget *parent)
     QObject::connect(mpThDataReader.get(), SIGNAL(sigAnalyseData(QString)), this, SLOT(slotAnalyseData(QString)), Qt::QueuedConnection);
 
     QObject::connect(mpThDataReader.get(), SIGNAL(sigDisplayMessage(QString)), this, SLOT(slotDisplayMessage(QString)), Qt::QueuedConnection);
-
-    QObject::connect(mpThDataReader.get(), SIGNAL(sigDisplayPercentage(int)), this, SLOT(slotDisplayPercentage(int)), Qt::QueuedConnection);
     QObject::connect(mpThDataReader.get(), SIGNAL(sigAnalysisDone()), this, SLOT(slotAnalysisDone()), Qt::QueuedConnection);
     QObject::connect(mpThDataReader.get(), SIGNAL(sigDisplayTRTime(QString)), this, SLOT(slotDisplayTRTime(QString)), Qt::QueuedConnection);
+    QObject::connect(mpThDataReader.get(), SIGNAL(sigDisplayPercentage(int)), this, SLOT(slotDisplayPercentage(int)), Qt::QueuedConnection);
 }
 
 CDlgMain::~CDlgMain()
@@ -98,15 +97,16 @@ void CDlgMain::slotAnalyseData(QString strStat)
     ui->teStats->setText(strStat);
 }
 
-void CDlgMain::slotDisplayPercentage(int percentage)
-{
-    ui->pgsBar1->setValue(percentage);
-}
-
 void CDlgMain::slotAnalysisDone()
 {
     displayMessage("데이터 분석이 끝났습니다.");
     ui->btnStatsTR->setEnabled(false);
+    ui->pgsBar1->setValue(100);
+}
+
+void CDlgMain::slotDisplayPercentage(int percentage)
+{
+    ui->pgsBar1->setValue(percentage);
 }
 
 void CDlgMain::slotDisplayTRTime(QString trTime)
